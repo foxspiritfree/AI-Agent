@@ -1,12 +1,20 @@
-﻿# GAS Debug Workflow
+# GAS Debug Workflow
 
 ## 目標
 
 針對 Google Apps Script 問題做最小修正，不破壞既有試算表資料。
 
-## 原則
+## 使用時機
 
-- 不改動原始資料結構，除非明確要求。
-- 先確認 Sheet 名稱、欄位、觸發條件。
-- 優先避免重複寫入、錯誤比對、時區問題、權限問題。
-- 修正後輸出完整可貼上的 GAS 程式碼。
+- Google Apps Script 除錯
+- Google Sheets 自動化
+- clasp / trigger / quota / scope 問題
+- GAS 程式碼 review 或最小修正
+
+## 執行方式
+
+本 workflow 只是快捷入口；正式 SOP 只維護在：
+
+- `000_Agent/skills/gas/SKILL.md`
+
+觸發此 workflow 時，先讀取並遵守 `gas` skill，再依使用者明確指令執行。

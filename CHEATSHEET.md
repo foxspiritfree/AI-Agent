@@ -1,4 +1,4 @@
-﻿# AI-Agent 常用指令速查
+# AI-Agent 常用指令速查
 
 ## 1. 進入 AI-Agent 資料夾
 

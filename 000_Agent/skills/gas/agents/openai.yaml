@@ -1,0 +1,3 @@
+display_name: Google Apps Script
+short_description: Build, review, and debug Apps Script tools.
+default_prompt: Help me build or fix this Google Apps Script workflow.

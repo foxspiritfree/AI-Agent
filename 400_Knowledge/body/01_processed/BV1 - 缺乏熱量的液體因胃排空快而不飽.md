@@ -1,0 +1,18 @@
+# 液體熱量與胃排空速度的關係
+
+
+Up: [[C4F]]
+- [ ] Used in Article
+
+---
+
+URL: https://www.facebook.com/100050186212776/posts/pfbid0zE2QPcSpuk9pk7eNAvhXLV1Xb2Cp7Gvgfu525neb6JHFZSx5U7ZwMqS6socBPcgVl/?mibextid=Nif5oz
+出處: 書
+
+ 
+
+當液體沒有熱量時, 像是水, 體積與胃排空速度成正比, 這說明為什麼喝水不會有飽足感
+
+**連結**: [[H13]]
+
+**連結**: [[BV]]

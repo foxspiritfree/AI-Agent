@@ -1,0 +1,16 @@
+# 使用難度較高的動作評估，代償易跑出來
+
+
+Up: [[B2O3D]]
+- [ ] Used in Article
+
+---
+
+URL: https://www.facebook.com/permalink.php?story_fbid=pfbid0CkwkLjAjUV4doKjzUFUPcq4UCkaHK3KYfEmqHqjhwaZnrBiD9jtjzDFC7k8F4fSal&id=100000102771018
+出處: NKT讀書會
+
+動作評估時，使用難度比較高的動作，比如說過頭深蹲代替深蹲，代償比較容易跑出來
+
+**連結**: [[B2O3D]]
+
+**連結**: [[AK4E3]]

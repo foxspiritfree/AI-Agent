@@ -1,0 +1,9 @@
+root_path: study
+inbox_path: 00_inbox
+processed_path: 01_processed
+quarantine_path: 02_quarantine
+archive_path: 03_archive
+classification_map_path: config/classification_map.md
+log_file_path: logs/activity.log
+batch_size: 10
+target_knowledge_base_path: D:\Feng

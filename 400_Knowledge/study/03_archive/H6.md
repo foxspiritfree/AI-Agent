@@ -1,0 +1,9 @@
+# M
+
+出處: FB
+
+成為自雇者幾個可以參考的時間管理方式：固定收發訊息時間、盡量不理會臨時的討論、事件的時間長度與安排的原則
+
+https://www.facebook.com/1353302099/posts/pfbid033vMxAR3VRuhxj5mUV4HXfNcc27RewERdifsgEnNRW3eMYyg3MzfcQ6uquYnRQJkKl/?mibextid=Nif5oz
+
+**連結**: [[H]]

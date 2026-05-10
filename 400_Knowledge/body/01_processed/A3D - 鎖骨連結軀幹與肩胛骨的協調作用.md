@@ -1,0 +1,16 @@
+# 鎖骨的重要性
+
+
+Up: [[C2B8D1]]
+- [ ] Used in Article
+
+---
+
+URL: https://m.facebook.com/story.php?story_fbid=pfbid02K2x6mQWicGu6Kj4thwMQBmxiZFs59sZpbuFChqiRq5ddApK8MeN2v98est7EKPhUl&id=100057294166471&mibextid=Nif5oz
+出處: physiomotion lab
+
+鎖骨連接軀幹到肩胛骨，是肩關節最重要的部分，主要在協調上肢的動作
+
+**連結**: [[A12]]
+
+**連結**: [[A3]]

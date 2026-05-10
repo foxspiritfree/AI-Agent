@@ -1,0 +1,544 @@
+# -*- coding: utf-8 -*-
+"""
+Zettelkasten Note Auto-Classifier (v4.3 - Final Corrected Version)
+--------------------------------------------------------------------
+此版本修正了先前版本中的語法及格式化錯誤，是一個可直接執行的完整腳本。
+
+✅ 核心特性:
+1.  **準確性優先**: 將「完整筆記內容」及「檔名描述」一併提交給 AI 進行分析。
+2.  **智能上下文**: 自動提取最相關的局部地圖作為 AI 的參考，但在找不到相關內容時會提供完整地圖，以避免「視野盲區」。
+3.  **信任並驗證 (Trust but Verify)**: 在接受 AI 建議的 ID 之前，會檢查該 ID 是否已存在。如果存在，將跳過該檔案並記錄日誌，防止分類系統被污染。
+4.  **結構化地圖管理**: 所有操作都在記憶體中的樹狀結構上進行，處理完畢後一次性生成格式優美、層級清晰的 Markdown 地圖檔案。
+5.  **健壯的錯誤處理**: 強化了對 Gemini API 回應的解析，能應對多種不規範的 JSON 格式，並提供清晰的日誌記錄。
+"""
+
+import os
+import re
+import json
+import datetime
+import time
+from difflib import SequenceMatcher
+from typing import Dict, Any, List, Optional, Set
+
+# 嘗試導入必要的套件，並在失敗時給出提示
+try:
+    import google.generativeai as genai
+    from dotenv import load_dotenv
+except ImportError:
+    print("錯誤：必要的套件未安裝。")
+    print("請在您的終端機中執行：pip install google-generativeai python-dotenv")
+    exit()
+
+# --- Configuration ---
+
+# 從 .env 檔案載入環境變數
+load_dotenv()
+
+# 定義檔案路徑
+INBOX_PATH = '00_inbox'
+PROCESSED_PATH = '01_processed'
+QUARANTINE_PATH = '02_quarantine'
+ARCHIVE_PATH = '03_archive'
+CONFIG_PATH = 'config/classification_map.md'
+LOG_FILE_PATH = 'logs/activity.log'
+
+# 從環境變數中獲取 Google API 金鑰
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+
+# API 請求之間的延遲（秒），以避免觸發速率限制
+API_RATE_LIMIT_DELAY = 2
+
+
+# --- Helper Functions ---
+
+def log_activity(msg: str):
+    """將活動訊息附加到日誌檔案中。"""
+    try:
+        ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
+        with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
+            f.write(f"{ts} - {msg}\n")
+    except Exception as e:
+        print(f"寫入日誌時發生錯誤: {e}")
+
+def parse_note_file(filepath: str) -> Optional[Dict[str, str]]:
+    """從檔名和檔案內容中解析出筆記的各個部分 (通用版本)。"""
+    try:
+        filename = os.path.basename(filepath)
+        # This regex simply captures the entire name before the .md extension.
+        match = re.match(r'^(.*)\.md$', filename, re.IGNORECASE)
+        if not match:
+            log_activity(f"檔案 '{filename}' 不是有效的 .md 檔案。")
+            return None
+            
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read().strip()
+            
+        return {
+            "description": match.group(1).strip(),
+            "content": content,
+            "original_filename": filename
+        }
+    except Exception as e:
+        log_activity(f"解析檔案失敗: {filepath}, 錯誤: {e}")
+        return None
+
+def get_parent_id(note_id: str) -> Optional[str]:
+    """從一個層級式 ID 中提取其父層的 ID。"""
+    parts = re.findall(r'[A-Z]+|\d+', note_id)
+    if len(parts) <= 1:
+        return None
+    return ''.join(parts[:-1])
+
+def similar(a: str, b: str) -> float:
+    """計算兩個字串的相似度比率。"""
+    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
+
+def get_next_top_level_id(tree: Dict[str, Any]) -> str:
+    """計算下一個可用的頂層分類 ID (A-Z, 然後 AA, AB...)。"""
+    existing_ids = set(tree['children'].keys())
+    
+    # 首先檢查 A-Z 是否用完
+    for i in range(26):
+        letter = chr(ord('A') + i)
+        if letter not in existing_ids:
+            return letter
+            
+    # 如果 A-Z 都用完了，開始生成 AA, AB, AC...
+    # 這是更進階的邏輯，確保系統可以無限擴展
+    for i in range(26):
+        outer_letter = chr(ord('A') + i)
+        for j in range(26):
+            inner_letter = chr(ord('A') + j)
+            double_letter_id = f"{outer_letter}{inner_letter}"
+            if double_letter_id not in existing_ids:
+                return double_letter_id
+                
+    # 理論上很難到達這裡，但作為備用
+    return "AAA"    
+
+def get_level(note_id: str) -> int:
+    """Calculates the hierarchical depth of a note ID."""
+    if not note_id:
+        return 0
+    return len(re.findall(r'[A-Z]+|\d+', note_id))
+
+def _get_next_alpha_suffix(parent_id: str, existing_ids: Set[str]) -> str:
+    """Computes the next available alphabetic suffix (A, B, ..., Z, AA...)."""
+    children_suffixes = [eid[len(parent_id):] for eid in existing_ids if eid.startswith(parent_id) and re.match(r'^[A-Z]+$', eid[len(parent_id):])]
+    if not children_suffixes:
+        return "A"
+    
+    # This logic correctly handles incrementing from 'A' to 'B', and 'Z' to 'AA'
+    latest_suffix = sorted(children_suffixes, key=lambda s: (len(s), s))[-1]
+    
+    s = list(latest_suffix)
+    i = len(s) - 1
+    while i >= 0:
+        if s[i] != 'Z':
+            s[i] = chr(ord(s[i]) + 1)
+            return "".join(s)
+        s[i] = 'A'
+        i -= 1
+    return 'A' + "".join(s)
+
+def _get_next_number_suffix(parent_id: str, existing_ids: Set[str]) -> str:
+    """Computes the next available numeric suffix (1, 2, ..., 10...)."""
+    max_num = 0
+    for eid in existing_ids:
+        if eid.startswith(parent_id):
+            suffix = eid[len(parent_id):]
+            if suffix.isdigit():
+                max_num = max(max_num, int(suffix))
+    return str(max_num + 1)
+
+def get_next_child_id(parent_id: str, existing_ids: Set[str]) -> str:
+    """Generates the next child ID based on the 'odd-letter, even-number' rule."""
+    parent_level = get_level(parent_id)
+    child_level = parent_level + 1  # Rule is based on the level of the note being created
+
+    # If the new child's level is EVEN (2, 4, ...), its suffix must be a NUMBER.
+    if child_level % 2 == 0:
+        suffix = _get_next_number_suffix(parent_id, existing_ids)
+    # If the new child's level is ODD (3, 5, ...), its suffix must be a LETTER.
+    else:
+        suffix = _get_next_alpha_suffix(parent_id, existing_ids)
+    return f"{parent_id}{suffix}"
+
+
+
+# --- Classification Tree (Map) Management ---
+
+def parse_classification_map(map_content: str) -> Dict[str, Any]:
+    """將 Markdown 格式的分類地圖解析成一個 Python 的樹狀字典結構。"""
+    tree = {'full_id': '', 'name': 'root', 'children': {}}
+    lines = map_content.splitlines()
+    stack = [tree]
+    indent_stack = [-1]
+    
+    for line in lines:
+        stripped = line.strip()
+        if not stripped.startswith('-'):
+            continue
+        
+        indent = len(line) - len(line.lstrip())
+        match = re.match(r'-\s*([A-Za-z0-9]+):\s*(.*)', stripped)
+        if not match:
+            continue
+        
+        full_id, name = match.group(1).upper(), match.group(2).strip()
+        
+        while indent <= indent_stack[-1]:
+            stack.pop()
+            indent_stack.pop()
+            
+        parent = stack[-1]
+        suffix = full_id[len(parent['full_id']):]
+        
+        node = {'full_id': full_id, 'name': name, 'children': {}}
+        parent['children'][suffix] = node
+        
+        stack.append(node)
+        indent_stack.append(indent)
+        
+    return tree
+
+def generate_map_md(tree: Dict[str, Any], indent: int = 0) -> str:
+    """將記憶體中的樹狀字典結構轉換回格式化的 Markdown 字串。"""
+    lines = []
+    sorted_suffixes = sorted(tree['children'].keys(), key=lambda s: (s.isdigit(), s))
+    
+    for suffix in sorted_suffixes:
+        child = tree['children'][suffix]
+        lines.append(f"{'  ' * indent}- {child['full_id']}: {child['name']}")
+        lines.extend(generate_map_md(child, indent + 1).splitlines())
+        
+    return '\n'.join(lines)
+
+def update_classification_map_in_memory(tree: Dict[str, Any], new_id: str, new_name: str):
+    """在記憶體的樹狀結構中新增或更新一個分類節點。"""
+    current = tree
+    path_parts = re.findall(r'[A-Z]+|\d+', new_id.upper())
+    current_full_id = ''
+    
+    for i, part in enumerate(path_parts):
+        parent_full_id = current_full_id
+        current_full_id += part
+        suffix = current_full_id[len(parent_full_id):]
+        
+        if suffix not in current['children']:
+            node_name = new_name if i == len(path_parts) - 1 else f"Placeholder for {current_full_id}"
+            current['children'][suffix] = {
+                'full_id': current_full_id,
+                'name': node_name,
+                'children': {}
+            }
+        current = current['children'][suffix]
+    
+    current['name'] = new_name
+
+def tree_walk(node: Dict[str, Any]):
+    """遞迴地遍歷樹中的所有節點。"""
+    yield node
+    for child in node['children'].values():
+        yield from tree_walk(child)
+
+
+# --- Context Optimization ---
+
+def find_relevant_map_snippet(tree: Dict[str, Any], note_text: str, threshold: float = 0.3, max_results: int = 15) -> str:
+    """根據筆記內容從完整地圖中提取最相關的片段，以節省 Token 並提高 AI 專注度。"""
+    similar_nodes = []
+    for node in tree_walk(tree):
+        if node['name'] in ('root', ''): continue
+        score = similar(node['name'], note_text)
+        if score > threshold:
+            similar_nodes.append((score, node))
+    
+    similar_nodes.sort(key=lambda x: x[0], reverse=True)
+    top_nodes = [node for score, node in similar_nodes[:max_results]]
+    
+    if not top_nodes:
+        return generate_map_md(tree) # 如果沒有找到相似的，返回完整地圖
+        
+    ids_to_include: Set[str] = set()
+    for node in top_nodes:
+        cid = node['full_id']
+        while cid:
+            ids_to_include.add(cid)
+            cid = get_parent_id(cid)
+
+    def build_snippet_recursive(node: Dict[str, Any], indent: int = 0) -> List[str]:
+        lines = []
+        sorted_suffixes = sorted(node['children'].keys(), key=lambda s: (s.isdigit(), s))
+        for suffix in sorted_suffixes:
+            child = node['children'][suffix]
+            if any(cid.startswith(child['full_id']) for cid in ids_to_include):
+                lines.append(f"{'  ' * indent}- {child['full_id']}: {child['name']}")
+                lines.extend(build_snippet_recursive(child, indent + 1))
+        return lines
+
+    return "\n".join(build_snippet_recursive(tree))
+
+
+# --- AI Prompting ---
+
+def build_prompt(note_data: Dict[str, str], map_snippet: str) -> str:
+    """Builds the full, structured prompt for the Gemini AI."""
+    return f"""
+You are a hyper-intelligent semantic router and summarizer for a Zettelkasten system. Your task is to analyze the new note and perform two actions:
+1.  Find the most conceptually relevant parent note.
+2.  Write a concise, descriptive summary of the new note.
+
+**Your Decision-Making Process:**
+1.  **Analyze Content:** Base your analysis on the core ideas in the **Full Content** of the new note.
+2.  **Prioritize Specificity:** Choose the most specific, direct parent. A good parent note is one that the new note *elaborates on*, *provides an example of*, or *deepens*. Avoid choosing a parent that is too broad or general if a more specific one exists.
+3.  **Find Parent:** Review the `Classification Map` and identify the single, most direct parent for the new note. If no topic is a good fit, or if the note introduces a completely new concept, you MUST use `null` for the parent ID.
+4.  **Summarize:** Create a short, high-quality summary of the note in **Traditional Chinese**. The summary should be between 5 and 15 words and capture the essence of the note.
+
+**Critical Rules for Your Response:**
+*   Your entire response MUST be a single, valid JSON object.
+*   Do not add any explanatory text, markdown formatting, or any words outside of the JSON braces.
+*   The JSON object must contain exactly TWO keys: `"most_relevant_parent_id"` and `"short_summary"`.
+*   The parent ID must be an existing ID from the map or `null`.
+*   The summary must be in Traditional Chinese.
+
+---
+**### EXAMPLES OF MY THINKING ###**
+
+**Example 1: Finding a Specific Parent (Deepening a Concept)**
+*New Note Content:* "診斷式提問通常是用來得到壞消息，利用這些資訊來解決問題"
+*Map Snippet:*
+```markdown
+- A3: 關於提問的元認知與問題意識
+  - A3A: 蒐集觀點作為提問的重點
+  - A3C: 5W1H 等非引導式問題框架
+```
+*Your Thought Process:* The new note is about "診斷式提問" (Diagnostic Questioning). This is a specific *method* for "蒐集觀點" (Collecting Viewpoints). The note elaborates on the idea in A3A. Therefore, the correct parent is the more specific `A3A`, not the general `A3`.
+*Your Output:*
+```json
+{{
+  "most_relevant_parent_id": "A3A",
+  "short_summary": "診斷式提問：一種獲取資訊以解決問題的方法"
+}}
+```
+
+**Example 2: Creating a New Top-Level Topic (No Good Fit)**
+*New Note Content:* "Stoicism is a school of Hellenistic philosophy founded in Athens by Zeno of Citium. The philosophy teaches that virtue, the highest good, is based on knowledge..."
+*Map Snippet:*
+```markdown
+- A: 提問的智慧
+- B: 寫作的原則
+- C: 個人成長與心態
+```
+*Your Thought Process:* The new note is about "Stoicism." Looking at the existing top-level topics, it has nothing to do with questioning, writing, or personal growth in the way they are defined. It's a completely new philosophical concept. Therefore, it should not be a child of any existing note. The correct action is to make it a new top-level note.
+*Your Output:*
+```json
+{{
+  "most_relevant_parent_id": null,
+  "short_summary": "斯多葛主義：一種基於知識與美德的古希臘哲學"
+}}
+```
+---
+
+**### YOUR TASK NOW ###**
+
+**### Classification Map ###**
+```markdown
+{map_snippet}
+```
+
+**### Note to Classify ###**
+**Description from Filename:** {note_data['description']}
+**Full Content:**
+```
+{note_data['content']}
+```
+
+Provide the JSON output now.
+"""
+#--- Core Processing Logic ---#
+def process_file(filepath: str, tree: Dict[str, Any], model: genai.GenerativeModel, existing_ids: Set[str], id_to_path_map: Dict[str, str]):
+    """Processes a single note file: classifies, renames, and archives it."""
+    note = parse_note_file(filepath)
+    if not note:
+        log_activity(f"SKIPPED (invalid filename): {filepath}")
+        return
+
+    # Action 3.1: Activate efficient context snippets.
+    map_snippet = find_relevant_map_snippet(tree, note['content'] + ' ' + note['description'])
+    prompt = build_prompt(note, map_snippet)
+
+    try:
+        response = model.generate_content(prompt)
+        text = response.text.strip()
+    except Exception as e:
+        log_activity(f"ERROR: Gemini API call failed for {note['original_filename']}. Details: {e}")
+        print(f"❌ API Error for {note['original_filename']}. Check logs.")
+        return
+
+    try:
+        json_text = ""
+        match_md = re.search(r'```json\s*(\{[\s\S]*\})\s*```', text)
+        if match_md:
+            json_text = match_md.group(1)
+        else:
+            match_plain = re.search(r'\{[\s\S]*\}', text)
+            if not match_plain:
+                raise json.JSONDecodeError("No JSON object found in response", text, 0)
+            json_text = match_plain.group(0)
+
+        data = json.loads(json_text)
+        parent_id = data.get('most_relevant_parent_id')
+        summary = data.get('short_summary')
+        
+        if parent_id and isinstance(parent_id, str):
+            parent_id = parent_id.strip().upper()
+        
+        new_name = summary.strip() if summary and isinstance(summary, str) and summary.strip() else note['description']
+        if new_name == note['description']:
+            log_activity(f"WARNING: AI returned an empty or invalid summary for {filepath}. Falling back to description.")
+
+    except (json.JSONDecodeError, AttributeError) as e:
+        log_activity(f"SKIPPED (invalid JSON or response format): {filepath}\nRaw Text: {text}\nError: {e}")
+        print(f"❌ Invalid JSON from AI for {note['original_filename']}.")
+        return
+
+    # Action 1.2: Use deterministic ID generation
+    if parent_id and parent_id in existing_ids:
+        new_id = get_next_child_id(parent_id, existing_ids)
+        log_activity(f"AI suggested parent '{parent_id}'. Generated next child ID: '{new_id}'.")
+    else:
+        new_id = get_next_top_level_id(tree)
+        parent_id = None # Ensure parent_id is null if it's not a valid existing ID
+        log_activity(f"AI suggested new top-level category. Generated new ID: '{new_id}'.")
+
+    existing_ids.add(new_id)
+    update_classification_map_in_memory(tree, new_id, new_name)
+
+    # Action 3.2: Improve filename formatting
+    sanitized_summary = re.sub(r'[\\/*?:\"<>|]', '', new_name)
+    new_filename = f"{new_id} - {sanitized_summary}.md"
+    new_filepath = os.path.join(PROCESSED_PATH, new_filename)
+
+    new_content = note['content']
+    if parent_id:
+        new_content += f"\n\n**連結**: [[{parent_id}]]"
+
+    with open(new_filepath, 'w', encoding='utf-8') as f:
+        f.write(new_content)
+    
+    id_to_path_map[new_id] = new_filepath
+    
+    # Create backlink in parent file
+    if parent_id and parent_id in id_to_path_map:
+        parent_filepath = id_to_path_map[parent_id]
+        try:
+            with open(parent_filepath, 'a', encoding='utf-8') as f:
+                f.write(f"\n[[{new_id}]]")
+            log_activity(f"SUCCESS: Appended backlink [[{new_id}]] to parent file '{parent_filepath}'.")
+        except Exception as e:
+            log_activity(f"ERROR: Failed to append backlink to parent file '{parent_filepath}'. Error: {e}")
+            print(f"⚠️ Could not write backlink to parent {parent_id}. See logs.")
+
+    log_activity(f"SUCCESS: Processed \"{note['original_filename']}\" -> \"{new_filename}\"")
+    print(f"✅ Created: {new_filepath}\n   Classification: {new_id}: {new_name}")
+
+    os.makedirs(ARCHIVE_PATH, exist_ok=True)
+    original_filepath = os.path.join(INBOX_PATH, note['original_filename'])
+    archive_filepath = os.path.join(ARCHIVE_PATH, note['original_filename'])
+    try:
+        os.rename(original_filepath, archive_filepath)
+        log_activity(f"ARCHIVED: Moved '{note['original_filename']}' to archive.")
+    except OSError as e:
+        log_activity(f"ERROR: Could not move original file to archive. Error: {e}")
+
+    time.sleep(API_RATE_LIMIT_DELAY)
+
+#--- Main Execution Block ---#
+def main():
+    """程式主進入點，協調整個流程。"""
+    print("--- Zettelkasten Auto-Classifier v5.0 (Aligned) ---")
+
+    if not GOOGLE_API_KEY:
+        log_activity("CRITICAL: GOOGLE_API_KEY is not set. Halting execution.")
+        print("\n❌ 錯誤：找不到 GOOGLE_API_KEY。")
+        print("請確保您的專案資料夾中有一個 .env 檔案，且內容為：")
+        print('GOOGLE_API_KEY="AIzaSy..."')
+        return
+
+    try:
+        genai.configure(api_key=GOOGLE_API_KEY)
+        # Action 3.3: Update the model
+        model = genai.GenerativeModel('models/gemini-3-flash-preview')
+    except Exception as e:
+        log_activity(f"CRITICAL: Failed to configure GenerativeModel. Error: {e}")
+        print(f"❌ 錯誤：設定 Gemini 模型失敗。請檢查您的 API 金鑰是否有效。")
+        return
+    
+    for path in [PROCESSED_PATH, QUARANTINE_PATH, ARCHIVE_PATH, 'config', 'logs']:
+        os.makedirs(path, exist_ok=True)
+
+    try:
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+            map_content = f.read()
+    except FileNotFoundError:
+        map_content = "# Auto-generated classification map\n"
+
+    tree = parse_classification_map(map_content)
+
+    # Create a lookup map for existing files for efficient backlinking
+    id_to_path_map = {}
+    if os.path.exists(PROCESSED_PATH):
+        for pf in os.listdir(PROCESSED_PATH):
+            match = re.match(r'^([A-Z0-9]+)\s*-.*\.md$', pf, re.IGNORECASE)
+            if match:
+                id_to_path_map[match.group(1).upper()] = os.path.join(PROCESSED_PATH, pf)
+
+    try:
+        if not os.path.exists(INBOX_PATH):
+            os.makedirs(INBOX_PATH)
+        
+        files_to_process = [f for f in os.listdir(INBOX_PATH) if f.endswith('.md')]
+        if not files_to_process:
+            print(f"\nInbox '{INBOX_PATH}' is empty. No files to process.")
+            return
+        print(f"\nFound {len(files_to_process)} notes to process in '{INBOX_PATH}'.")
+    except Exception as e:
+        log_activity(f"CRITICAL: Could not read from inbox directory '{INBOX_PATH}'. Error: {e}")
+        print(f"\n❌ 錯誤：無法讀取收件匣資料夾 '{INBOX_PATH}'。")
+        return
+
+    try:
+        existing_ids = {node['full_id'] for node in tree_walk(tree) if node['full_id']}
+        
+        for i, filename in enumerate(files_to_process):
+            print(f"\n[{i+1}/{len(files_to_process)}] === Processing: {filename} ===")
+            try:
+                process_file(
+                    filepath=os.path.join(INBOX_PATH, filename), 
+                    tree=tree, 
+                    model=model,
+                    existing_ids=existing_ids,
+                    id_to_path_map=id_to_path_map
+                )
+            except Exception as e:
+                log_activity(f"FATAL: Unhandled exception for {filename}. Error: {e}")
+                print(f"❌ An unexpected fatal error occurred for {filename}. See logs. Continuing...")
+
+    finally:
+        print("\n--------------------------------------------------")
+        print("Process finished or interrupted. Saving progress...")
+        
+        final_md = generate_map_md(tree)
+        with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
+            f.write(final_md)
+        
+        print(f"✅ Classification map saved to '{CONFIG_PATH}'.")
+        print("--------------------------------------------------")
+
+    print("\nProcess complete.")
+
+
+if __name__ == '__main__':
+    main()

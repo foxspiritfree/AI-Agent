@@ -1,0 +1,815 @@
+# -*- coding: utf-8 -*-
+"""
+Zettelkasten Note Auto-Classifier (v4.3 - Final Corrected Version)
+--------------------------------------------------------------------
+此版本修正了先前版本中的語法及格式化錯誤，是一個可直接執行的完整腳本。
+
+✅ 核心特性:
+1.  **準確性優先**: 將「完整筆記內容」及「檔名描述」一併提交給 AI 進行分析。
+2.  **智能上下文**: 自動提取最相關的局部地圖作為 AI 的參考，但在找不到相關內容時會提供完整地圖，以避免「視野盲區」。
+3.  **信任並驗證 (Trust but Verify)**: 在接受 AI 建議的 ID 之前，會檢查該 ID 是否已存在。如果存在，將跳過該檔案並記錄日誌，防止分類系統被污染。
+4.  **結構化地圖管理**: 所有操作都在記憶體中的樹狀結構上進行，處理完畢後一次性生成格式優美、層級清晰的 Markdown 地圖檔案。
+5.  **健壯的錯誤處理**: 強化了對 Gemini API 回應的解析，能應對多種不規範的 JSON 格式，並提供清晰的日誌記錄。
+"""
+
+import os
+import re
+import json
+import datetime
+import time
+import argparse
+from difflib import SequenceMatcher
+from typing import Dict, Any, List, Optional, Set
+
+# 嘗試導入必要的套件，並在失敗時給出提示
+try:
+    import google.generativeai as genai
+    from dotenv import load_dotenv
+except ImportError:
+    print("錯誤：必要的套件未安裝。")
+    print("請在您的終端機中執行：pip install google-generativeai python-dotenv")
+    exit()
+
+# --- Configuration ---
+
+PIPELINE_DIR = os.path.dirname(os.path.abspath(__file__))
+KNOWLEDGE_ROOT = os.path.dirname(PIPELINE_DIR)
+PROFILE_CONFIG_DIR = os.path.join(KNOWLEDGE_ROOT, "profiles")
+
+# 這些全域值會由 configure_profile() 依 profile 覆寫。
+PROFILE_NAME = ""
+PROFILE_ROOT = ""
+INBOX_PATH = ""
+PROCESSED_PATH = ""
+QUARANTINE_PATH = ""
+ARCHIVE_PATH = ""
+CONFIG_PATH = ""
+LOG_FILE_PATH = ""
+TARGET_KNOWLEDGE_BASE_PATH = ""
+GOOGLE_API_KEY = ""
+API_RATE_LIMIT_DELAY = 3
+BATCH_SIZE = 10
+
+
+def parse_simple_yaml(filepath: str) -> Dict[str, str]:
+    """讀取本專案 profile 使用的簡單 key: value YAML。"""
+    data = {}
+    with open(filepath, "r", encoding="utf-8") as f:
+        for line_number, raw_line in enumerate(f, start=1):
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if ":" not in line:
+                raise ValueError(f"Invalid profile line {line_number} in {filepath}: {raw_line.rstrip()}")
+            key, value = line.split(":", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if not key:
+                raise ValueError(f"Empty profile key on line {line_number} in {filepath}")
+            data[key] = value
+    return data
+
+
+def list_profile_names() -> List[str]:
+    """列出 profiles 目錄內可用的 profile 名稱。"""
+    if not os.path.isdir(PROFILE_CONFIG_DIR):
+        return []
+    names = []
+    for filename in os.listdir(PROFILE_CONFIG_DIR):
+        if filename.lower().endswith((".yaml", ".yml")):
+            names.append(os.path.splitext(filename)[0])
+    return sorted(names)
+
+
+def load_profile(profile_name: str) -> Dict[str, Any]:
+    """從 profiles/{profile}.yaml 載入 profile 設定。"""
+    profile_path = os.path.join(PROFILE_CONFIG_DIR, f"{profile_name}.yaml")
+    if not os.path.exists(profile_path):
+        valid_profiles = ", ".join(list_profile_names()) or "(none)"
+        raise ValueError(f"Unknown profile '{profile_name}'. Valid profiles: {valid_profiles}")
+
+    profile = parse_simple_yaml(profile_path)
+    profile["profile_config_path"] = profile_path
+
+    required_keys = {
+        "root_path",
+        "inbox_path",
+        "processed_path",
+        "quarantine_path",
+        "archive_path",
+        "classification_map_path",
+        "log_file_path",
+        "batch_size",
+        "target_knowledge_base_path",
+    }
+    missing_keys = sorted(required_keys - set(profile))
+    if missing_keys:
+        raise ValueError(f"Profile '{profile_name}' is missing keys: {', '.join(missing_keys)}")
+
+    return profile
+
+
+def resolve_profile_path(root_path: str, configured_path: str) -> str:
+    """把 profile 內相對路徑解析成絕對路徑。"""
+    expanded_path = os.path.expandvars(configured_path)
+    if os.path.isabs(expanded_path):
+        return os.path.abspath(expanded_path)
+    return os.path.abspath(os.path.join(root_path, expanded_path))
+
+
+def configure_profile(profile_name: str) -> Dict[str, Any]:
+    """依 profile 設定 pipeline 路徑與批次大小。"""
+    global PROFILE_NAME, PROFILE_ROOT, INBOX_PATH, PROCESSED_PATH, QUARANTINE_PATH
+    global ARCHIVE_PATH, CONFIG_PATH, LOG_FILE_PATH, TARGET_KNOWLEDGE_BASE_PATH
+    global GOOGLE_API_KEY, BATCH_SIZE
+
+    profile = load_profile(profile_name)
+    root_path = resolve_profile_path(KNOWLEDGE_ROOT, profile["root_path"])
+
+    PROFILE_NAME = profile_name
+    PROFILE_ROOT = root_path
+    INBOX_PATH = resolve_profile_path(root_path, profile["inbox_path"])
+    PROCESSED_PATH = resolve_profile_path(root_path, profile["processed_path"])
+    QUARANTINE_PATH = resolve_profile_path(root_path, profile["quarantine_path"])
+    ARCHIVE_PATH = resolve_profile_path(root_path, profile["archive_path"])
+    CONFIG_PATH = resolve_profile_path(root_path, profile["classification_map_path"])
+    LOG_FILE_PATH = resolve_profile_path(root_path, profile["log_file_path"])
+    TARGET_KNOWLEDGE_BASE_PATH = profile["target_knowledge_base_path"]
+    BATCH_SIZE = int(profile["batch_size"])
+
+    dotenv_path = os.path.join(root_path, ".env")
+    load_dotenv(dotenv_path=dotenv_path)
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
+
+    return {
+        "profile": PROFILE_NAME,
+        "root_path": PROFILE_ROOT,
+        "inbox_path": INBOX_PATH,
+        "processed_path": PROCESSED_PATH,
+        "quarantine_path": QUARANTINE_PATH,
+        "archive_path": ARCHIVE_PATH,
+        "classification_map_path": CONFIG_PATH,
+        "log_file_path": LOG_FILE_PATH,
+        "batch_size": BATCH_SIZE,
+        "target_knowledge_base_path": TARGET_KNOWLEDGE_BASE_PATH,
+        "env_path": dotenv_path,
+        "has_google_api_key": bool(GOOGLE_API_KEY),
+        "profile_config_path": profile["profile_config_path"],
+    }
+
+
+# --- Helper Functions ---
+
+def log_activity(msg: str):
+    """將活動訊息附加到日誌檔案中。"""
+    try:
+        ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
+        with open(LOG_FILE_PATH, 'a', encoding='utf-8') as f:
+            f.write(f"{ts} - {msg}\n")
+    except Exception as e:
+        print(f"寫入日誌時發生錯誤: {e}")
+
+def parse_note_file(filepath: str) -> Optional[Dict[str, str]]:
+    """從檔名和檔案內容中解析出筆記的各個部分 (通用版本)。"""
+    try:
+        filename = os.path.basename(filepath)
+        # This regex simply captures the entire name before the .md extension.
+        match = re.match(r'^(.*)\.md$', filename, re.IGNORECASE)
+        if not match:
+            log_activity(f"檔案 '{filename}' 不是有效的 .md 檔案。")
+            return None
+            
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read().strip()
+            
+        return {
+            "description": match.group(1).strip(),
+            "content": content,
+            "original_filename": filename
+        }
+    except Exception as e:
+        log_activity(f"解析檔案失敗: {filepath}, 錯誤: {e}")
+        return None
+
+def get_parent_id(note_id: str) -> Optional[str]:
+    """從一個層級式 ID 中提取其父層的 ID。"""
+    parts = re.findall(r'[A-Z]+|\d+', note_id)
+    if len(parts) <= 1:
+        return None
+    return ''.join(parts[:-1])
+
+def similar(a: str, b: str) -> float:
+    """計算兩個字串的相似度比率。"""
+    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
+
+def get_next_top_level_id(tree: Dict[str, Any]) -> str:
+    """計算下一個可用的頂層分類 ID (A-Z, 然後 AA, AB...)。"""
+    existing_ids = set(tree['children'].keys())
+    
+    # 首先檢查 A-Z 是否用完
+    for i in range(26):
+        letter = chr(ord('A') + i)
+        if letter not in existing_ids:
+            return letter
+            
+    # 如果 A-Z 都用完了，開始生成 AA, AB, AC...
+    # 這是更進階的邏輯，確保系統可以無限擴展
+    for i in range(26):
+        outer_letter = chr(ord('A') + i)
+        for j in range(26):
+            inner_letter = chr(ord('A') + j)
+            double_letter_id = f"{outer_letter}{inner_letter}"
+            if double_letter_id not in existing_ids:
+                return double_letter_id
+                
+    # 理論上很難到達這裡，但作為備用
+    return "AAA"    
+
+def get_level(note_id: str) -> int:
+    """Calculates the hierarchical depth of a note ID."""
+    if not note_id:
+        return 0
+    return len(re.findall(r'[A-Z]+|\d+', note_id))
+
+def _get_next_alpha_suffix(parent_id: str, existing_ids: Set[str]) -> str:
+    """Computes the next available alphabetic suffix (A, B, ..., Z, AA...)."""
+    children_suffixes = [eid[len(parent_id):] for eid in existing_ids if eid.startswith(parent_id) and re.match(r'^[A-Z]+$', eid[len(parent_id):])]
+    if not children_suffixes:
+        return "A"
+    
+    # This logic correctly handles incrementing from 'A' to 'B', and 'Z' to 'AA'
+    latest_suffix = sorted(children_suffixes, key=lambda s: (len(s), s))[-1]
+    
+    s = list(latest_suffix)
+    i = len(s) - 1
+    while i >= 0:
+        if s[i] != 'Z':
+            s[i] = chr(ord(s[i]) + 1)
+            return "".join(s)
+        s[i] = 'A'
+        i -= 1
+    return 'A' + "".join(s)
+
+def _get_next_number_suffix(parent_id: str, existing_ids: Set[str]) -> str:
+    """Computes the next available numeric suffix (1, 2, ..., 10...)."""
+    max_num = 0
+    for eid in existing_ids:
+        if eid.startswith(parent_id):
+            suffix = eid[len(parent_id):]
+            if suffix.isdigit():
+                max_num = max(max_num, int(suffix))
+    return str(max_num + 1)
+
+def get_next_child_id(parent_id: str, existing_ids: Set[str]) -> str:
+    """Generates the next child ID based on the 'odd-letter, even-number' rule."""
+    parent_level = get_level(parent_id)
+    child_level = parent_level + 1  # Rule is based on the level of the note being created
+
+    # If the new child's level is EVEN (2, 4, ...), its suffix must be a NUMBER.
+    if child_level % 2 == 0:
+        suffix = _get_next_number_suffix(parent_id, existing_ids)
+    # If the new child's level is ODD (3, 5, ...), its suffix must be a LETTER.
+    else:
+        suffix = _get_next_alpha_suffix(parent_id, existing_ids)
+    return f"{parent_id}{suffix}"
+
+
+
+# --- Classification Tree (Map) Management ---
+
+def parse_classification_map(map_content: str) -> Dict[str, Any]:
+    """將 Markdown 格式的分類地圖解析成一個 Python 的樹狀字典結構。"""
+    tree = {'full_id': '', 'name': 'root', 'children': {}}
+    lines = map_content.splitlines()
+    stack = [tree]
+    indent_stack = [-1]
+    
+    for line in lines:
+        stripped = line.strip()
+        if not stripped.startswith('-'):
+            continue
+        
+        indent = len(line) - len(line.lstrip())
+        match = re.match(r'-\s*([A-Za-z0-9]+):\s*(.*)', stripped)
+        if not match:
+            continue
+        
+        full_id, name = match.group(1).upper(), match.group(2).strip()
+        
+        while indent <= indent_stack[-1]:
+            stack.pop()
+            indent_stack.pop()
+            
+        parent = stack[-1]
+        suffix = full_id[len(parent['full_id']):]
+        
+        node = {'full_id': full_id, 'name': name, 'children': {}}
+        parent['children'][suffix] = node
+        
+        stack.append(node)
+        indent_stack.append(indent)
+        
+    return tree
+
+def generate_map_md(tree: Dict[str, Any], indent: int = 0) -> str:
+    """將記憶體中的樹狀字典結構轉換回格式化的 Markdown 字串。"""
+    lines = []
+    sorted_suffixes = sorted(tree['children'].keys(), key=lambda s: (s.isdigit(), s))
+    
+    for suffix in sorted_suffixes:
+        child = tree['children'][suffix]
+        lines.append(f"{'  ' * indent}- {child['full_id']}: {child['name']}")
+        lines.extend(generate_map_md(child, indent + 1).splitlines())
+        
+    return '\n'.join(lines)
+
+def update_classification_map_in_memory(tree: Dict[str, Any], new_id: str, new_name: str):
+    """在記憶體的樹狀結構中新增或更新一個分類節點。"""
+    current = tree
+    path_parts = re.findall(r'[A-Z]+|\d+', new_id.upper())
+    current_full_id = ''
+    
+    for i, part in enumerate(path_parts):
+        parent_full_id = current_full_id
+        current_full_id += part
+        suffix = current_full_id[len(parent_full_id):]
+        
+        if suffix not in current['children']:
+            node_name = new_name if i == len(path_parts) - 1 else f"Placeholder for {current_full_id}"
+            current['children'][suffix] = {
+                'full_id': current_full_id,
+                'name': node_name,
+                'children': {}
+            }
+        current = current['children'][suffix]
+    
+    current['name'] = new_name
+
+def tree_walk(node: Dict[str, Any]):
+    """遞迴地遍歷樹中的所有節點。"""
+    yield node
+    for child in node['children'].values():
+        yield from tree_walk(child)
+
+
+# --- Context Optimization ---
+
+def find_relevant_map_snippet(tree: Dict[str, Any], note_text: str, threshold: float = 0.3, max_results: int = 15) -> str:
+    """根據筆記內容從完整地圖中提取最相關的片段，以節省 Token 並提高 AI 專注度。"""
+    similar_nodes = []
+    for node in tree_walk(tree):
+        if node['name'] in ('root', ''): continue
+        score = similar(node['name'], note_text)
+        if score > threshold:
+            similar_nodes.append((score, node))
+    
+    similar_nodes.sort(key=lambda x: x[0], reverse=True)
+    top_nodes = [node for score, node in similar_nodes[:max_results]]
+    
+    if not top_nodes:
+        return generate_map_md(tree) # 如果沒有找到相似的，返回完整地圖
+        
+    ids_to_include: Set[str] = set()
+    for node in top_nodes:
+        cid = node['full_id']
+        while cid:
+            ids_to_include.add(cid)
+            cid = get_parent_id(cid)
+
+    def build_snippet_recursive(node: Dict[str, Any], indent: int = 0) -> List[str]:
+        lines = []
+        sorted_suffixes = sorted(node['children'].keys(), key=lambda s: (s.isdigit(), s))
+        for suffix in sorted_suffixes:
+            child = node['children'][suffix]
+            if any(cid.startswith(child['full_id']) for cid in ids_to_include):
+                lines.append(f"{'  ' * indent}- {child['full_id']}: {child['name']}")
+                lines.extend(build_snippet_recursive(child, indent + 1))
+        return lines
+
+    return "\n".join(build_snippet_recursive(tree))
+
+
+# --- AI Prompting ---
+
+def build_batch_prompt(notes_data: List[Dict[str, str]], map_snippet: str) -> str:
+    """Builds a single, large prompt for processing a batch of notes."""
+    
+    notes_to_classify_str = ""
+    for i, note_data in enumerate(notes_data):
+        notes_to_classify_str += f"""
+---
+**Note #{i+1}**
+**Original Filename:** {note_data['original_filename']}
+**Description from Filename:** {note_data['description']}
+**Full Content:**
+```
+{note_data['content']}
+```
+"""
+
+    return f"""
+You are a hyper-intelligent semantic router and summarizer for a Zettelkasten system. Your task is to analyze a BATCH of new notes and for EACH note, perform two actions:
+1.  Find the most conceptually relevant parent note from the provided map.
+2.  Write a concise, descriptive summary of the new note.
+
+**Your Decision-Making Process (for each note):**
+1.  **Analyze Content:** Base your analysis on the core ideas in the **Full Content** of the new note.
+2.  **Prioritize Specificity:** Choose the most specific, direct parent. A good parent note is one that the new note *elaborates on*, *provides an example of*, or *deepens*.
+3.  **Find Parent:** Review the `Classification Map` and identify the single, most direct parent for the new note.
+    *   If no topic is a good fit, you MUST use `null` for the parent ID.
+    *   **INTRA-BATCH PARENTING:** If a note's direct parent is ANOTHER note within this SAME batch (e.g., Note #3 is a child of Note #1), you MUST use the special placeholder `"PARENT_IS_NOTE_X"`, where X is the parent note's number.
+
+4.  **Summarize:** Create a short, high-quality summary of the note in **Traditional Chinese**. The summary should be between 5 and 15 words and capture the essence of the note.
+
+**Critical Rules for Your Response:**
+*   Your entire response MUST be a single, valid JSON ARRAY.
+*   The array should contain exactly one JSON object for each note in the batch, in the same order.
+*   Do not add any explanatory text, markdown formatting, or any words outside of the JSON array brackets `[]`.
+*   Each JSON object in the array must contain exactly TWO keys: `"most_relevant_parent_id"` and `"short_summary"`.
+*   The parent ID must be an existing ID from the map, `null`, or the special `"PARENT_IS_NOTE_X"` placeholder.
+*   The summary must be in Traditional Chinese.
+
+---
+**### EXAMPLE OF A BATCH RESPONSE ###**
+
+**If I send you 3 notes to classify:**
+- Note #1 is a new topic: "The Art of Storytelling".
+- Note #2 is about an existing topic `B3A` ("Writing Hooks").
+- Note #3 is an example of "The Art of Storytelling" (i.e., a child of Note #1).
+
+**Your output MUST look like this:**
+```json
+[
+  {{
+    "most_relevant_parent_id": null,
+    "short_summary": "故事敘事的藝術與核心原則"
+  }},
+  {{
+    "most_relevant_parent_id": "B3A",
+    "short_summary": "寫作中的開頭技巧與吸引力"
+  }},
+  {{
+    "most_relevant_parent_id": "PARENT_IS_NOTE_1",
+    "short_summary": "使用「英雄旅程」作為故事架構的範例"
+  }}
+]
+```
+---
+
+**### YOUR TASK NOW ###**
+
+**### Classification Map ###**
+```markdown
+{map_snippet}
+```
+
+**### Notes to Classify ###**
+{notes_to_classify_str}
+
+Provide the JSON array output now.
+"""
+
+#--- Core Processing Logic ---#
+
+def process_batch(batch_files: List[str], tree: Dict[str, Any], model: genai.GenerativeModel, existing_ids: Set[str], id_to_path_map: Dict[str, str], no_archive: bool = False):
+    """Processes a batch of notes with a two-pass system to handle intra-batch dependencies."""
+    notes_in_batch = []
+    for filepath in batch_files:
+        note = parse_note_file(os.path.join(INBOX_PATH, filepath))
+        if note:
+            notes_in_batch.append(note)
+
+    if not notes_in_batch:
+        log_activity("Batch is empty after parsing. Skipping.")
+        return
+
+    combined_content = " ".join([n['content'] + ' ' + n['description'] for n in notes_in_batch])
+    map_snippet = find_relevant_map_snippet(tree, combined_content)
+    prompt = build_batch_prompt(notes_in_batch, map_snippet)
+
+    try:
+        response = model.generate_content(prompt)
+        text = response.text.strip()
+    except Exception as e:
+        log_activity(f"ERROR: Gemini API call failed for batch. Files: {', '.join(batch_files)}. Details: {e}")
+        print(f"❌ API Error for batch. Check logs.")
+        return
+
+    try:
+        json_text = ""
+        match_md = re.search(r'```json\s*(\[[\s\S]*\])\s*```', text, re.MULTILINE)
+        if match_md:
+            json_text = match_md.group(1)
+        else:
+            match_plain = re.search(r'\[[\s\S]*\]', text, re.MULTILINE)
+            if not match_plain:
+                raise json.JSONDecodeError("No JSON array found in response", text, 0)
+            json_text = match_plain.group(0)
+
+        results = json.loads(json_text)
+
+        if not isinstance(results, list) or len(results) != len(notes_in_batch):
+            log_activity(f"WARNING: Mismatch in batch response. Expected {len(notes_in_batch)} results, got {len(results)}. Files: {', '.join(batch_files)}")
+            print(f"⚠️ AI response count mismatch for batch. Skipping this batch.")
+            return
+
+        # --- Two-Pass Processing Logic ---
+        first_pass_items = []
+        second_pass_items = []
+        newly_assigned_ids: Dict[int, str] = {} # {batch_index: new_note_id}
+
+        for i, (note, result) in enumerate(zip(notes_in_batch, results)):
+            parent_id_str = result.get('most_relevant_parent_id')
+            if isinstance(parent_id_str, str) and parent_id_str.startswith('PARENT_IS_NOTE_'):
+                second_pass_items.append({'batch_index': i, 'note': note, 'result': result})
+            else:
+                first_pass_items.append({'batch_index': i, 'note': note, 'result': result})
+
+        # --- First Pass ---
+        print(f"    Processing {len(first_pass_items)} non-dependent notes...")
+        for item in first_pass_items:
+            new_id = finalize_note_processing(item['result'], item['note'], tree, existing_ids, id_to_path_map, no_archive=no_archive)
+            if new_id:
+                newly_assigned_ids[item['batch_index']] = new_id
+        
+        # --- Second Pass ---
+        if second_pass_items:
+            print(f"    Processing {len(second_pass_items)} dependent notes...")
+        for item in second_pass_items:
+            placeholder = item['result']['most_relevant_parent_id']
+            try:
+                parent_batch_index = int(re.search(r'\d+', placeholder).group()) - 1
+                real_parent_id = newly_assigned_ids.get(parent_batch_index)
+
+                if real_parent_id:
+                    # Replace placeholder with real ID and process
+                    item['result']['most_relevant_parent_id'] = real_parent_id
+                    finalize_note_processing(item['result'], item['note'], tree, existing_ids, id_to_path_map, no_archive=no_archive)
+                else:
+                    log_activity(f"SKIPPED (dependent parent failed): {item['note']['original_filename']}. Parent placeholder '{placeholder}' could not be resolved.")
+                    print(f"    ⚠️ Skipped: {item['note']['original_filename']} because its parent in the same batch failed processing.")
+            except (AttributeError, ValueError) as e:
+                log_activity(f"SKIPPED (invalid placeholder): {item['note']['original_filename']}. Placeholder: '{placeholder}'. Error: {e}")
+                print(f"    ⚠️ Skipped: {item['note']['original_filename']} due to an invalid parent placeholder.")
+
+
+    except (json.JSONDecodeError, TypeError) as e:
+        log_activity(f"SKIPPED BATCH (invalid JSON array): Files: {', '.join(batch_files)}\nRaw Text: {text}\nError: {e}")
+        print(f"❌ Invalid JSON array from AI for batch. Skipping.")
+        return
+    
+    time.sleep(API_RATE_LIMIT_DELAY)
+
+def finalize_note_processing(result_data: Dict[str, Any], note: Dict[str, str], tree: Dict[str, Any], existing_ids: Set[str], id_to_path_map: Dict[str, str], no_archive: bool = False) -> Optional[str]:
+    """Takes AI result, handles file operations, and returns the new note ID."""
+    try:
+        parent_id = result_data.get('most_relevant_parent_id')
+        summary = result_data.get('short_summary')
+        
+        if parent_id and isinstance(parent_id, str):
+            parent_id = parent_id.strip().upper()
+        
+        new_name = summary.strip() if summary and isinstance(summary, str) and summary.strip() else note['description']
+        if new_name == note['description']:
+            log_activity(f"WARNING: AI returned an empty or invalid summary for {note['original_filename']}. Falling back to description.")
+
+    except (AttributeError) as e:
+        log_activity(f"SKIPPED (invalid data structure in result): {note['original_filename']}\nError: {e}")
+        print(f"❌ Invalid data from AI for {note['original_filename']}.")
+        return None
+
+    # Action 1.2: Use deterministic ID generation
+    if parent_id and parent_id in existing_ids:
+        new_id = get_next_child_id(parent_id, existing_ids)
+        log_activity(f"AI suggested parent '{parent_id}'. Generated next child ID: '{new_id}'.")
+    else:
+        new_id = get_next_top_level_id(tree)
+        parent_id = None # Ensure parent_id is null if it's not a valid existing ID
+        log_activity(f"AI suggested new top-level category. Generated new ID: '{new_id}'.")
+
+    existing_ids.add(new_id)
+    update_classification_map_in_memory(tree, new_id, new_name)
+
+    # Action 3.2: Improve filename formatting
+    sanitized_summary = re.sub(r'[\\/*?:\"<>|]', '', new_name)
+    new_filename = f"{new_id} - {sanitized_summary}.md"
+    new_filepath = os.path.join(PROCESSED_PATH, new_filename)
+
+    new_content = note['content']
+    if parent_id:
+        new_content += f"\n\n**連結**: [[{parent_id}]]"
+
+    with open(new_filepath, 'w', encoding='utf-8') as f:
+        f.write(new_content)
+    
+    id_to_path_map[new_id] = new_filepath
+    
+    # Create backlink in parent file
+    if parent_id and parent_id in id_to_path_map:
+        parent_filepath = id_to_path_map[parent_id]
+        try:
+            with open(parent_filepath, 'a', encoding='utf-8') as f:
+                f.write(f"\n[[{new_id}]]")
+            log_activity(f"SUCCESS: Appended backlink [[{new_id}]] to parent file '{parent_filepath}'.")
+        except Exception as e:
+            log_activity(f"ERROR: Failed to append backlink to parent file '{parent_filepath}'. Error: {e}")
+            print(f"⚠️ Could not write backlink to parent {parent_id}. See logs.")
+
+    log_activity(f"SUCCESS: Processed \"{note['original_filename']}\" -> \"{new_filename}\"")
+    print(f"    ✅ Processed: {note['original_filename']} -> {new_filename}")
+
+    if no_archive:
+        log_activity(f"NO_ARCHIVE: Kept '{note['original_filename']}' in inbox.")
+    else:
+        os.makedirs(ARCHIVE_PATH, exist_ok=True)
+        original_filepath = os.path.join(INBOX_PATH, note['original_filename'])
+        archive_filepath = os.path.join(ARCHIVE_PATH, note['original_filename'])
+        try:
+            os.rename(original_filepath, archive_filepath)
+            log_activity(f"ARCHIVED: Moved '{note['original_filename']}' to archive.")
+        except OSError as e:
+            log_activity(f"ERROR: Could not move original file to archive. Error: {e}")
+    
+    return new_id
+
+
+def print_profile_config(config: Dict[str, Any]):
+    """輸出目前 profile 設定，避免顯示 secret 內容。"""
+    print(json.dumps(config, indent=2, ensure_ascii=False))
+
+
+def get_files_to_process(limit: Optional[int] = None) -> List[str]:
+    """取得 inbox 中準備處理的 Markdown 檔案。"""
+    if not os.path.exists(INBOX_PATH):
+        return []
+
+    files = sorted(f for f in os.listdir(INBOX_PATH) if f.lower().endswith('.md'))
+    if limit is not None:
+        files = files[:limit]
+    return files
+
+
+def build_batches(files_to_process: List[str]) -> List[List[str]]:
+    """依目前 profile 的 BATCH_SIZE 建立批次。"""
+    return [files_to_process[i:i + BATCH_SIZE] for i in range(0, len(files_to_process), BATCH_SIZE)]
+
+
+def run_dry_run(config: Dict[str, Any], limit: Optional[int] = None, no_archive: bool = False):
+    """只檢查設定與待處理檔案，不呼叫 API、不寫入檔案。"""
+    print("--- Zettelkasten Auto-Classifier Dry Run ---")
+    print_profile_config(config)
+
+    try:
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+            map_content = f.read()
+    except FileNotFoundError:
+        map_content = ""
+
+    tree = parse_classification_map(map_content)
+    existing_ids = {node['full_id'] for node in tree_walk(tree) if node['full_id']}
+    files_to_process = get_files_to_process(limit=limit)
+    batches = build_batches(files_to_process)
+
+    print("\nDry-run summary:")
+    print(f"- profile: {PROFILE_NAME}")
+    print(f"- existing classification ids: {len(existing_ids)}")
+    print(f"- inbox markdown files: {len(files_to_process)}")
+    print(f"- batch size: {BATCH_SIZE}")
+    print(f"- batches: {len(batches)}")
+    print(f"- limit: {limit if limit is not None else '(none)'}")
+    print(f"- no archive: {no_archive}")
+    if files_to_process:
+        print("- planned batches:")
+        for batch_index, batch in enumerate(batches, start=1):
+            print(f"  - batch {batch_index}: {len(batch)} files")
+            for filename in batch:
+                print(f"    - {filename}")
+
+
+#--- Main Execution Block ---#
+def main(profile_name: str = "study", dry_run: bool = False, show_config: bool = False, limit: Optional[int] = None, no_archive: bool = False):
+    """程式主進入點，協調整個流程。"""
+    try:
+        config = configure_profile(profile_name)
+    except ValueError as e:
+        print(f"❌ {e}")
+        return
+
+    if show_config:
+        print_profile_config(config)
+        return
+
+    if dry_run:
+        run_dry_run(config, limit=limit, no_archive=no_archive)
+        return
+
+    print(f"--- Zettelkasten Auto-Classifier v5.0 (Batch Mode / {PROFILE_NAME}) ---")
+
+    if not GOOGLE_API_KEY:
+        log_activity("CRITICAL: GOOGLE_API_KEY is not set. Halting execution.")
+        print("\n❌ 錯誤：找不到 GOOGLE_API_KEY。")
+        print("請確保您的專案資料夾中有一個 .env 檔案，且內容為：")
+        print('GOOGLE_API_KEY="AIzaSy..."')
+        return
+
+    try:
+        genai.configure(api_key=GOOGLE_API_KEY)
+        model = genai.GenerativeModel('models/gemini-3-flash-preview')
+    except Exception as e:
+        log_activity(f"CRITICAL: Failed to configure GenerativeModel. Error: {e}")
+        print(f"❌ 錯誤：設定 Gemini 模型失敗。請檢查您的 API 金鑰是否有效。")
+        return
+    
+    for path in [PROCESSED_PATH, QUARANTINE_PATH, ARCHIVE_PATH, os.path.dirname(CONFIG_PATH), os.path.dirname(LOG_FILE_PATH)]:
+        os.makedirs(path, exist_ok=True)
+
+    try:
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+            map_content = f.read()
+    except FileNotFoundError:
+        map_content = "# Auto-generated classification map\n"
+
+    tree = parse_classification_map(map_content)
+
+    id_to_path_map = {}
+    if os.path.exists(PROCESSED_PATH):
+        for pf in os.listdir(PROCESSED_PATH):
+            match = re.match(r'^([A-Z0-9]+)\s*-.*\.md$', pf, re.IGNORECASE)
+            if match:
+                id_to_path_map[match.group(1).upper()] = os.path.join(PROCESSED_PATH, pf)
+
+    try:
+        if not os.path.exists(INBOX_PATH):
+            os.makedirs(INBOX_PATH)
+        
+        files_to_process = get_files_to_process(limit=limit)
+        if not files_to_process:
+            print(f"\nInbox '{INBOX_PATH}' is empty. No files to process.")
+            return
+        print(f"\nFound {len(files_to_process)} notes to process in '{INBOX_PATH}'.")
+        if limit is not None:
+            print(f"Limit enabled: processing at most {limit} notes.")
+        if no_archive:
+            print("No-archive enabled: original inbox files will remain in place.")
+    except Exception as e:
+        log_activity(f"CRITICAL: Could not read from inbox directory '{INBOX_PATH}'. Error: {e}")
+        print(f"\n❌ 錯誤：無法讀取收件匣資料夾 '{INBOX_PATH}'。")
+        return
+
+    try:
+        existing_ids = {node['full_id'] for node in tree_walk(tree) if node['full_id']}
+        
+        # Create batches
+        batches = build_batches(files_to_process)
+        
+        for i, batch in enumerate(batches):
+            print(f"\n[{i+1}/{len(batches)}] === Processing Batch of {len(batch)} notes ===")
+            try:
+                process_batch(
+                    batch_files=batch, 
+                    tree=tree, 
+                    model=model,
+                    existing_ids=existing_ids,
+                    id_to_path_map=id_to_path_map,
+                    no_archive=no_archive
+                )
+            except Exception as e:
+                log_activity(f"FATAL: Unhandled exception for batch {i+1}. Error: {e}")
+                print(f"❌ An unexpected fatal error occurred for batch {i+1}. See logs. Continuing...")
+
+    finally:
+        print("\n--------------------------------------------------")
+        print("Process finished or interrupted. Saving progress...")
+        
+        final_md = generate_map_md(tree)
+        with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
+            f.write(final_md)
+        
+        print(f"✅ Classification map saved to '{CONFIG_PATH}'.")
+        print("--------------------------------------------------")
+
+    print("\nProcess complete.")
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Process Notion notes into a Zettelkasten knowledge profile.")
+    parser.add_argument("--profile", default="study", help="Knowledge profile to process.")
+    parser.add_argument("--dry-run", action="store_true", help="Show config and inbox markdown files without API calls or writes.")
+    parser.add_argument("--show-config", action="store_true", help="Show resolved profile config without secrets.")
+    parser.add_argument("--limit", type=int, default=None, help="Process at most N markdown files from inbox.")
+    parser.add_argument("--no-archive", action="store_true", help="Keep original inbox files in place after processing.")
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    if args.limit is not None and args.limit < 1:
+        raise SystemExit("--limit must be a positive integer.")
+    main(
+        profile_name=args.profile,
+        dry_run=args.dry_run,
+        show_config=args.show_config,
+        limit=args.limit,
+        no_archive=args.no_archive,
+    )

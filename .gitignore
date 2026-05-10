@@ -1,0 +1,6 @@
+400_Knowledge/**/.env
+400_Knowledge/**/logs/
+400_Knowledge/**/*.zip
+400_Knowledge/**/__pycache__/
+400_Knowledge/**/*.pyc
+000_Agent/skills/ak-threads-booster/

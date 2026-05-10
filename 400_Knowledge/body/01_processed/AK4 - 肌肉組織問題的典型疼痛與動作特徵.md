@@ -1,0 +1,23 @@
+# 肌肉問題的特徵
+
+
+Up: [[B1D]]
+- [ ] Used in Article
+
+---
+URL: https://m.facebook.com/story.php?story_fbid=pfbid02DFzPDXupGg5MgbRZqxFtaZwjNMKs5fNAoH9cfq6ZeE6gukLyaNHGzEHkvkr5xkZYl&id=100071855934276&mibextid=Nif5oz
+
+肌肉問題，會緊繃活動度下降，在做主動動作會不舒服，反向做則會比較舒緩，肌肉的疼痛通常會是一大片甚至延伸，而且在移動的時候就會不舒服，在代償中會導致其他肌肉的不適
+
+**連結**: [[B1D]]
+
+**連結**: [[AK]]
+[[AK4A]]
+[[AK4B]]
+[[AK4C]]
+[[AK4D]]
+[[AK4E]]
+[[AK4F]]
+[[AK4G]]
+[[AK4H]]
+[[AK4I]]

@@ -1,0 +1,17 @@
+# 枕額肌各段的功能與影響
+
+
+Up: [[C2A1]]
+- [ ] Used in Article
+
+---
+
+URL: https://www.facebook.com/CHUANmakeyouchange/posts/pfbid0dDaZBo92kvkdUoiSQtToG1NvH4K61Rr1JktLKYg3FBey94uJJ8Zai6c88eStPuLtl
+出處: 劉育銓FB
+
+枕額肌的額段控制眉毛、頭皮筋膜會影響到深層及太陽穴、枕端則影響到眼睛及枕下相關內容（莖突及枕下神經、顏面神經），全部一起出問題則會有頭頂型頭痛
+
+**連結**: [[B1D]]
+
+**連結**: [[AK2]]
+[[AK2F1]]

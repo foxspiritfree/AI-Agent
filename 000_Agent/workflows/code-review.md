@@ -1,13 +1,15 @@
-﻿# Code Review Workflow
+# Code Review Workflow
 
 ## 目標
 
 快速找出 bug、風險、可維護性問題，並給出最小修改方案。
 
-## 步驟
+## 執行方式
 
-1. 先讀入口檔與相關設定。
-2. 確認目前行為與預期行為。
-3. 找出最可能原因。
-4. 提出最小修正。
-5. 給驗證方式。
+本 workflow 只是快捷入口；正式 review 流程只維護在：
+
+- `000_Agent/skills/superpowers/requesting-code-review/SKILL.md`
+- `000_Agent/skills/superpowers/receiving-code-review/SKILL.md`
+- `000_Agent/skills/superpowers/verification-before-completion/SKILL.md`
+
+本專案偏好：使用繁體中文、先列發現、優先最小修改、附驗證方式。

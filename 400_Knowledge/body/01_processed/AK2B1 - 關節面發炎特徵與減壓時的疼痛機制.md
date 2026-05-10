@@ -1,0 +1,17 @@
+# 關節面問題的特徵
+
+
+Up: [[B1D]]
+- [ ] Used in Article
+
+---
+URL: https://m.facebook.com/story.php?story_fbid=pfbid02DFzPDXupGg5MgbRZqxFtaZwjNMKs5fNAoH9cfq6ZeE6gukLyaNHGzEHkvkr5xkZYl&id=100071855934276&mibextid=Nif5oz
+
+ 
+
+關節面問題，常發生在承重側，導致關節面容易發炎，比較獨特的情況會是關節減壓時更容易感覺到疼痛，這是因為減壓後循環變好，致使感覺比較敏感
+
+**連結**: [[B1D]]
+
+**連結**: [[AK2B]]
+[[AK2B1A]]

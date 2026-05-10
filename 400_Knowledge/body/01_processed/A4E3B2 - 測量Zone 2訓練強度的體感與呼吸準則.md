@@ -1,0 +1,19 @@
+# Zone2訓練的簡易測量方法
+
+
+Up: [[C4E1A]]
+- [ ] Used in Article
+
+---
+
+URL: https://m.facebook.com/story.php?story_fbid=pfbid0D1gDhyRgycDPrEU7Uz32qPoKnc5Pj1XKjXAcuMNE99ERGBuEo6ARZM8kxxPtBTZol&id=609518805&mibextid=Nif5oz
+
+Zone2訓練思維及好處
+
+ 
+
+zone2可以以無儀器測量的最簡易方法，一者為RPE用體感，約略勉強可以跟他人對話的程度；另一個則是呼吸檔位法，鼻子呼吸一比一。
+
+**連結**: [[A3C]]
+
+**連結**: [[A4E3B]]
