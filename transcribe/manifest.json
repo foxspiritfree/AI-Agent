@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Full Caption to Markdown",
+  "version": "0.1.0",
+  "description": "Fetch full YouTube captions and copy them as Markdown.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "clipboardWrite",
+    "downloads",
+    "tabCapture",
+    "offscreen",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://youtube.com/*",
+    "https://api.openai.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "serviceWorker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/watch*", "https://youtube.com/watch*"],
+      "js": ["youtubePageExtractor.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "YouTube Full Caption to Markdown"
+  }
+}

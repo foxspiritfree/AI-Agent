@@ -23,9 +23,12 @@
 | `fullstack` | app implementation / stack-specific engineering | candidate split | 未來依常用 stack 拆成 `react-firebase-stack` 或 `app-implementation` |
 | `gas` | apps-script-automation | alias | 短期保留 `gas`，未來可新增能力別名 |
 | `journal` | daily-review-capture | alias | 短期保留 `journal`，語意已清楚 |
+| `listening-communication` | listening-communication | keep | 保留，屬於能力導向 |
 | `notion-task-triage` | daily task triage | keep | 保留，屬於能力導向 |
 | `open-threads-to-notion` | backlog capture from open threads | keep | 保留，屬於能力導向 |
+| `persuasion-design` | persuasion-design | keep | 保留，屬於能力導向 |
 | `pm` | requirement-analysis | alias | 短期保留 `pm`，未來可新增或 rename 為 `requirement-analysis` |
+| `precision-writing` | precision-writing | keep | 保留，屬於能力導向 |
 | `project-memory` | project context persistence | keep | 保留，屬於能力導向 |
 | `project-todo-capture` | project backlog capture | keep | 保留，屬於能力導向 |
 | `self-brain` | personal context persistence | keep | 保留，屬於能力導向 |

@@ -1,0 +1,4 @@
+interface:
+  display_name: "紫微解盤討論"
+  short_description: "討論紫微解盤流程之前必須先查知識庫並對齊既有規則內容"
+  default_prompt: "協助討論紫微斗數解盤流程，先閱讀專案 knowledge_base 再提出建議。"

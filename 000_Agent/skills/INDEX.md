@@ -21,22 +21,28 @@
 | 調整 AI 協作規則、外部方法論本地化、檢查規則衝突 | `ai-agent-collaboration` | `000_Agent/skills/ai-agent-collaboration/SKILL.md` |
 | Threads 選題、起草、分析、預測、復盤 | `ak-threads-booster` | `000_Agent/skills/ak-threads-booster/SKILL.md` |
 | 用 study/body 卡片盒補強文章 | `article-enrichment` | `000_Agent/skills/article-enrichment/SKILL.md` |
+| 下載第三方工具、處理防毒攔截、套用二進位 wrapper / patch / mod | `safe-download-handling` | `000_Agent/skills/safe-download-handling/SKILL.md` |
 | JS/TS、Firebase、GCP、API、前後端實作 | `fullstack` | `000_Agent/skills/fullstack/SKILL.md` |
 | 帳務行政待辦檢查、訂閱取消、付款追蹤、卡片管理任務化 | `finance-admin-review` | `000_Agent/skills/finance-admin-review/SKILL.md` |
+| 產品、服務、onboarding、MOT、情緒記憶、成長感與回訪體驗設計 | `experience-design-strategist` | `000_Agent/skills/experience-design-strategist/SKILL.md` |
 | Google Apps Script 協作與除錯 | `gas` | `000_Agent/skills/gas/SKILL.md` |
 | 日記、工作復盤、session log | `journal` | `000_Agent/skills/journal/SKILL.md` |
+| 日常溝通、高共情傾聽、情緒認可、低防衛對話設計 | `listening-communication` | `000_Agent/skills/listening-communication/SKILL.md` |
 | 從 study/body 卡片、讀書筆記、方法論萃取可發展的 skill/workflow | `knowledge-to-skill` | `000_Agent/skills/knowledge-to-skill/SKILL.md` |
 | 從 Notion 整理今日任務 | `notion-task-triage` | `000_Agent/skills/notion-task-triage/SKILL.md` |
 | 把 Open Threads 打包成 Notion 待安排項目 | `open-threads-to-notion` | `000_Agent/skills/open-threads-to-notion/SKILL.md` |
+| 說服策略設計、談判協商、推動方案、打破對話僵局 | `persuasion-design` | `000_Agent/skills/persuasion-design/SKILL.md` |
 | PRD、需求拆解、範圍定義 | `pm` | `000_Agent/skills/pm/SKILL.md` |
+| 文字修改、精煉表達、改寫標題、降低認知負荷 | `precision-writing` | `000_Agent/skills/precision-writing/SKILL.md` |
 | 模糊問題釐清、根因分析、決策前整理、下一步判斷 | `problem-framing` | `000_Agent/skills/problem-framing/SKILL.md` |
 | 技術專案跨對話接續與 memory-bank | `project-memory` | `000_Agent/skills/project-memory/SKILL.md` |
 | 掃描本機專案待辦並打包到 Notion | `project-todo-capture` | `000_Agent/skills/project-todo-capture/SKILL.md` |
 | 長期偏好、決策、人物、專案脈絡沉澱 | `self-brain` | `000_Agent/skills/self-brain/SKILL.md` |
 | 建立或改善 skill | `skill-creator` | `000_Agent/skills/skill-creator/SKILL.md` |
 | 提問設計、訪談、請教、對話釐清、降低防衛的問句 | `strategic-questioning` | `000_Agent/skills/strategic-questioning/SKILL.md` |
-| UI/UX 檢查與設計建議 | `uiux` | `000_Agent/skills/uiux/SKILL.md` |
+| UI/UX、視覺版面、表格風格、體驗策略檢查與設計建議 | `uiux` | `000_Agent/skills/uiux/SKILL.md` |
 | Notion 匯出、study/body、卡片盒 pipeline | `zettelkasten` | `000_Agent/skills/zettelkasten/SKILL.md` |
+| 紫微斗數解盤流程、星星指引 narrator、knowledge_base 規則討論 | `ziwei-reading-discussion` | `000_Agent/skills/ziwei-reading-discussion/SKILL.md` |
 
 ## Special Skill Packages
 

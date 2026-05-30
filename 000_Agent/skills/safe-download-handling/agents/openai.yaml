@@ -1,0 +1,4 @@
+interface:
+  display_name: "Safe Download Handling"
+  short_description: "Safer binary downloads and antivirus handling"
+  default_prompt: "Use safe-download-handling to handle a third-party binary download, wrapper setup, antivirus warning, or blocked download with source checks, isolation, hash tracking, and rollback."

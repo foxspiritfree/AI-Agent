@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ziwei Line Cloud Run Ops"
+  short_description: "Deploy and verify the Ziwei LINE bot safely."
+  default_prompt: "Use this skill to debug build/deploy issues, deploy the Ziwei LINE bot, and verify LINE/LIFF Cloud Run behavior."

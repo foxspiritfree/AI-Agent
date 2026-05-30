@@ -49,6 +49,7 @@ TARGET_KNOWLEDGE_BASE_PATH = ""
 GOOGLE_API_KEY = ""
 API_RATE_LIMIT_DELAY = 3
 BATCH_SIZE = 10
+ROUTING_MAP_DEPTH = 2
 
 
 def parse_simple_yaml(filepath: str) -> Dict[str, str]:
@@ -324,6 +325,68 @@ def generate_map_md(tree: Dict[str, Any], indent: int = 0) -> str:
         
     return '\n'.join(lines)
 
+
+def generate_shallow_map_md(tree: Dict[str, Any], max_depth: int = ROUTING_MAP_DEPTH, indent: int = 0) -> str:
+    """產生固定深度的分類圖，用於先把混雜 inbox 路由到大分支。"""
+    if max_depth <= 0:
+        return ""
+
+    lines = []
+    sorted_suffixes = sorted(tree['children'].keys(), key=lambda s: (s.isdigit(), s))
+    for suffix in sorted_suffixes:
+        child = tree['children'][suffix]
+        lines.append(f"{'  ' * indent}- {child['full_id']}: {child['name']}")
+        child_lines = generate_shallow_map_md(child, max_depth - 1, indent + 1)
+        if child_lines:
+            lines.extend(child_lines.splitlines())
+
+    return "\n".join(lines)
+
+
+def get_node_by_id(tree: Dict[str, Any], target_id: str) -> Optional[Dict[str, Any]]:
+    """從分類樹取得指定 ID 的節點。"""
+    normalized_id = target_id.upper()
+    for node in tree_walk(tree):
+        if node['full_id'] == normalized_id:
+            return node
+    return None
+
+
+def build_focused_map_snippet(tree: Dict[str, Any], branch_ids: List[Optional[str]]) -> str:
+    """依第一階段路由結果抽出相關分支，避免把完整分類圖塞進 prompt。"""
+    valid_branch_ids = []
+    for branch_id in branch_ids:
+        if not isinstance(branch_id, str):
+            continue
+        normalized_id = branch_id.upper()
+        if get_node_by_id(tree, normalized_id):
+            valid_branch_ids.append(normalized_id)
+
+    if not valid_branch_ids:
+        return generate_shallow_map_md(tree)
+
+    ids_to_include: Set[str] = set()
+    for branch_id in valid_branch_ids:
+        cid = branch_id
+        while cid:
+            ids_to_include.add(cid)
+            cid = get_parent_id(cid)
+        for node in tree_walk(get_node_by_id(tree, branch_id)):
+            if node['full_id']:
+                ids_to_include.add(node['full_id'])
+
+    def build_snippet_recursive(node: Dict[str, Any], indent: int = 0) -> List[str]:
+        lines = []
+        sorted_suffixes = sorted(node['children'].keys(), key=lambda s: (s.isdigit(), s))
+        for suffix in sorted_suffixes:
+            child = node['children'][suffix]
+            if child['full_id'] in ids_to_include:
+                lines.append(f"{'  ' * indent}- {child['full_id']}: {child['name']}")
+                lines.extend(build_snippet_recursive(child, indent + 1))
+        return lines
+
+    return "\n".join(build_snippet_recursive(tree))
+
 def update_classification_map_in_memory(tree: Dict[str, Any], new_id: str, new_name: str):
     """在記憶體的樹狀結構中新增或更新一個分類節點。"""
     current = tree
@@ -368,7 +431,7 @@ def find_relevant_map_snippet(tree: Dict[str, Any], note_text: str, threshold: f
     top_nodes = [node for score, node in similar_nodes[:max_results]]
     
     if not top_nodes:
-        return generate_map_md(tree) # 如果沒有找到相似的，返回完整地圖
+        return generate_shallow_map_md(tree)
         
     ids_to_include: Set[str] = set()
     for node in top_nodes:
@@ -390,7 +453,59 @@ def find_relevant_map_snippet(tree: Dict[str, Any], note_text: str, threshold: f
     return "\n".join(build_snippet_recursive(tree))
 
 
+def extract_json_array(text: str) -> List[Any]:
+    """從 Gemini 回應取出 JSON array。"""
+    match_md = re.search(r'```json\s*(\[[\s\S]*\])\s*```', text, re.MULTILINE)
+    if match_md:
+        return json.loads(match_md.group(1))
+
+    match_plain = re.search(r'\[[\s\S]*\]', text, re.MULTILINE)
+    if not match_plain:
+        raise json.JSONDecodeError("No JSON array found in response", text, 0)
+    return json.loads(match_plain.group(0))
+
+
 # --- AI Prompting ---
+
+def build_routing_prompt(notes_data: List[Dict[str, str]], shallow_map: str) -> str:
+    """Builds a small prompt that routes mixed notes to broad map branches."""
+    notes_to_route_str = ""
+    for i, note_data in enumerate(notes_data):
+        notes_to_route_str += f"""
+---
+**Note #{i+1}**
+**Original Filename:** {note_data['original_filename']}
+**Description from Filename:** {note_data['description']}
+**Full Content:**
+```
+{note_data['content']}
+```
+"""
+
+    return f"""
+You are routing mixed inbox notes into broad branches of a Zettelkasten classification map.
+
+For each note, choose the most relevant existing parent ID from the shallow map below.
+Prefer the most specific ID available in this shallow map. If no branch fits, use null.
+
+Return only one valid JSON array. The array must contain exactly one object per note, in the same order.
+Each object must contain exactly one key: "route_parent_id".
+
+**### Shallow Classification Map ###**
+```markdown
+{shallow_map}
+```
+
+**### Notes to Route ###**
+{notes_to_route_str}
+
+Example output:
+[
+  {{"route_parent_id": "C3B1"}},
+  {{"route_parent_id": null}}
+]
+"""
+
 
 def build_batch_prompt(notes_data: List[Dict[str, str]], map_snippet: str) -> str:
     """Builds a single, large prompt for processing a batch of notes."""
@@ -484,8 +599,26 @@ def process_batch(batch_files: List[str], tree: Dict[str, Any], model: genai.Gen
         log_activity("Batch is empty after parsing. Skipping.")
         return
 
-    combined_content = " ".join([n['content'] + ' ' + n['description'] for n in notes_in_batch])
-    map_snippet = find_relevant_map_snippet(tree, combined_content)
+    shallow_map = generate_shallow_map_md(tree)
+    routing_prompt = build_routing_prompt(notes_in_batch, shallow_map)
+
+    try:
+        routing_response = model.generate_content(routing_prompt)
+        routing_results = extract_json_array(routing_response.text.strip())
+        if not isinstance(routing_results, list) or len(routing_results) != len(notes_in_batch):
+            raise ValueError(f"Expected {len(notes_in_batch)} routing results, got {len(routing_results)}")
+        routed_branch_ids = [item.get("route_parent_id") if isinstance(item, dict) else None for item in routing_results]
+        map_snippet = build_focused_map_snippet(tree, routed_branch_ids)
+        log_activity(
+            f"ROUTED batch. Files: {', '.join(batch_files)}. "
+            f"Branches: {', '.join([str(b) for b in routed_branch_ids])}"
+        )
+        time.sleep(API_RATE_LIMIT_DELAY)
+    except Exception as e:
+        combined_content = " ".join([n['content'] + ' ' + n['description'] for n in notes_in_batch])
+        map_snippet = find_relevant_map_snippet(tree, combined_content)
+        log_activity(f"WARNING: Routing stage failed. Falling back to similarity snippet. Files: {', '.join(batch_files)}. Error: {e}")
+
     prompt = build_batch_prompt(notes_in_batch, map_snippet)
 
     try:
@@ -497,17 +630,7 @@ def process_batch(batch_files: List[str], tree: Dict[str, Any], model: genai.Gen
         return
 
     try:
-        json_text = ""
-        match_md = re.search(r'```json\s*(\[[\s\S]*\])\s*```', text, re.MULTILINE)
-        if match_md:
-            json_text = match_md.group(1)
-        else:
-            match_plain = re.search(r'\[[\s\S]*\]', text, re.MULTILINE)
-            if not match_plain:
-                raise json.JSONDecodeError("No JSON array found in response", text, 0)
-            json_text = match_plain.group(0)
-
-        results = json.loads(json_text)
+        results = extract_json_array(text)
 
         if not isinstance(results, list) or len(results) != len(notes_in_batch):
             log_activity(f"WARNING: Mismatch in batch response. Expected {len(notes_in_batch)} results, got {len(results)}. Files: {', '.join(batch_files)}")
@@ -629,7 +752,14 @@ def finalize_note_processing(result_data: Dict[str, Any], note: Dict[str, str], 
             os.rename(original_filepath, archive_filepath)
             log_activity(f"ARCHIVED: Moved '{note['original_filename']}' to archive.")
         except OSError as e:
-            log_activity(f"ERROR: Could not move original file to archive. Error: {e}")
+            if os.path.exists(archive_filepath):
+                try:
+                    os.remove(original_filepath)
+                    log_activity(f"ARCHIVED: Removed duplicate inbox copy because archive already exists for '{note['original_filename']}'.")
+                except OSError as remove_error:
+                    log_activity(f"ERROR: Archive exists but duplicate inbox file could not be removed. Error: {remove_error}")
+            else:
+                log_activity(f"ERROR: Could not move original file to archive. Error: {e}")
     
     return new_id
 
@@ -714,7 +844,7 @@ def main(profile_name: str = "study", dry_run: bool = False, show_config: bool =
         return
 
     try:
-        genai.configure(api_key=GOOGLE_API_KEY)
+        genai.configure(api_key=GOOGLE_API_KEY, transport="rest")
         model = genai.GenerativeModel('models/gemini-3-flash-preview')
     except Exception as e:
         log_activity(f"CRITICAL: Failed to configure GenerativeModel. Error: {e}")

@@ -1,107 +1,70 @@
 ---
 name: project-memory
-description: Use this skill when starting or continuing a coding/product project that needs durable AI handoff context across Codex, Claude, Gemini, Cursor, or new chat sessions. Trigger when the user mentions memory-bank, PRD, tech stack, implementation plan, progress, architecture, project handoff, continuing a previous build, or asks AI to integrate/maintain project context.
+description: 專案啟動引擎與全局記憶。Use this skill when starting a new project, continuing an existing one, or adding new features mid-project. Trigger when the user mentions memory-bank, PRD, tech stack, implementation plan, architecture, project handoff, or wants to bootstrap/start a new project.
 ---
 
 # Project Memory Skill
 
 ## Goal
 
-Maintain a small `memory-bank/` for each active app or technical project so any AI tool can reload the project state after context loss, model switching, or a new session.
-
-Use this for project-specific context. Do not use it for global AI rules, personal identity, daily journaling, or raw imported reference material.
+自動化專案啟動流程並維護持久的 AI 移交上下文 (durable AI handoff context)。
+本技能涵蓋三個核心情境：**專案啟動 (Start a Project)**、**中途追加功能 (Add a Feature)**、**日常推進 (Continue a Project)**，並嚴格導入 Token 優化與三級任務分派機制。
 
 ## When to Use
 
-Use this skill when:
+- **Start a Project**：需要從零建置新專案、工具、自動化腳本時。
+- **Add a Feature**：專案進行到一半，臨時有新想法或需大幅修改架構時。
+- **Continue a Project**：接續開發，需讀取專案狀態與 `tasks/` 任務推進進度時。
 
-- Starting a new app, tool, automation, or technical build.
-- Continuing an implementation after a long gap or a new conversation.
-- The user asks for a PRD, technical stack, implementation plan, progress log, or architecture note.
-- A project has enough moving parts that future AI sessions may need handoff context.
-- The user says to read or update `memory-bank`.
+## Folder Structure
 
-## Folder
-
-Create or maintain this folder at the project root:
+建立或維護以下完整的大腦結構於專案根目錄：
 
 ```text
 memory-bank/
 ├── PRD.md
-├── tech-stack.md
 ├── implementation-plan.md
-├── progress.md
-└── architecture.md
+└── progress.md
+architecture.md           # 專案架構、技術棧 (tech-stack)、資料流與核心藍圖
+context_tips.md           # 代碼風格慣例與 Token 優化提醒 (例如：Git 煞車規則)
+tasks/
+├── backlog/              # 臨時想到的點子、未分類的任務草稿
+├── simple/               # [改 1~3 檔] 已知做法、單點修改、低風險 (推薦 Codex/Flash)
+├── feature/              # [改 3~10 檔] 完整新功能 (推薦 Codex/Sonnet)
+└── architecture/         # [需理解系統] 架構、重構、跨模組 (推薦 Sonnet/Opus 產方案 -> Codex 執行)
 ```
 
-If the repo already uses another equivalent folder, follow the existing local convention and do not duplicate it.
+## Scenario 1: Start a Project (專案啟動)
 
-## File Roles
+1. **需求訪談**：向使用者詢問 1~2 個關鍵問題，釐清技術棧偏好、核心功能邊界。
+2. **藍圖勾勒**：草擬 `architecture.md` (架構與資料庫 Schema) 與 `context_tips.md`，讓使用者確認。
+3. **實體建檔**：取得同意後，自動在根目錄建立上述的 `memory-bank/`, `tasks/` 三級目錄，以及對應的核心檔案。
 
-- `PRD.md`: product goal, users, core flows, scope, non-goals, constraints, acceptance criteria.
-- `tech-stack.md`: framework, language, libraries, hosting, integrations, environment assumptions, reasons for major choices.
-- `implementation-plan.md`: ordered steps, each with a small scope and clear acceptance criteria.
-- `progress.md`: chronological implementation log; update after each completed step with actual result, test result, and next start point.
-- `architecture.md`: current folder/file map, module responsibilities, important data flow, key design decisions, known limitations.
+## Scenario 2: Add a Feature (追加功能 / Top-Down 四步施工法)
 
-## Start a Project
+當使用者提出新想法或需求時，嚴格禁止直接改寫代碼，應遵循四步法：
+1. **衝擊分析 (Thinking)**：讀取 `architecture.md`，評估新需求會影響哪些核心邏輯與資料表，並**僅更新藍圖**。
+2. **任務拆解與分類**：將新功能拆解成獨立子任務 (具備目標、輸入/輸出、DoD)。依據附圖規則判斷複雜度，直接將檔案產出至對應的 `tasks/simple/`, `tasks/feature/` 或 `tasks/architecture/`。
+3. **漸進式施工**：依「底層結構 ➡️ 後端 API ➡️ 前端 UI」順序執行任務。
+4. **全局驗收**：檢查關鍵進入點與 Integration Test，更新 `progress.md`。
 
-1. Read existing README, package/config files, and any current project docs before creating `memory-bank`.
-2. If no `memory-bank/` exists, create the five files with short, useful content. Leave unknowns explicit instead of inventing details.
-3. Keep `implementation-plan.md` split into small steps that can be implemented and verified independently.
-4. Put source links or imported notes in `200_Reference/imported/` when they are external material; only distilled project decisions go into `memory-bank`.
+## Scenario 3: Continue a Project (接續開發)
 
-## Continue a Project
+1. 閱讀 `memory-bank/` 內所有檔案。
+2. 閱讀 `architecture.md` 與 `context_tips.md`。
+3. 尋找 `tasks/` 中對應級別 (`simple`, `feature`, `architecture`) 正在進行的任務檔案。
+4. **Git 煞車機制**：執行完**單一任務步驟**後，必須暫停並要求使用者進行 Git Commit 存檔。若後續遇到連續卡關 (3次以上)，主動建議使用者 `git reset --hard` 並微調 Prompt，切斷無效 Token 消耗。
+5. 實作後更新 `memory-bank/progress.md`，若牽涉模組變更，同步更新 `architecture.md`。
 
-When asked to continue:
+## 任務分派判斷規則 (Task Routing Rules)
 
-1. Read all files in `memory-bank/`.
-2. Read the local files referenced by `architecture.md` or the next step in `implementation-plan.md`.
-3. State the next planned step and affected files before editing.
-4. Implement only the current step unless the user explicitly asks for a larger batch.
-5. Verify the step with the smallest meaningful command or manual check.
-6. Update `progress.md` and, when structure or responsibilities changed, update `architecture.md`.
-
-## Step Discipline
-
-Default execution prompt:
-
-```text
-Read memory-bank, implement only the next unchecked step in implementation-plan, verify it, update progress.md and architecture.md, then stop.
-```
-
-Use this discipline as a default, not a hard blocker. If the user gives a clear instruction, execute it first and write assumptions afterward.
-
-## Progress Entry Format
-
-Append entries like this:
-
-```markdown
-## YYYY-MM-DD - Step N: [short title]
-
-- Done: [what changed]
-- Files: [important files touched]
-- Verification: [command/manual check and result]
-- Notes: [bugs, decisions, or follow-up]
-- Next: [next recommended step]
-```
-
-## Architecture Update Rules
-
-Update `architecture.md` when:
-
-- New modules, components, routes, APIs, data stores, or scripts are added.
-- Responsibilities move between files.
-- A key dependency or hosting assumption changes.
-- A bug fix teaches a reusable constraint.
-
-Keep it concise. Prefer a current map and important decisions over a full historical diary.
+建立任務檔案至 `tasks/` 時，必須遵守以下判斷：
+- **`tasks/simple/`**：只改 1~3 個檔案，且目標明確。適合交給輕量模型 (Flash / Codex)。
+- **`tasks/feature/`**：需要完成一個使用者看得到的功能，可能動 3~10 個檔案。適合中大型模型 (Codex / Sonnet)。
+- **`tasks/architecture/`**：需要先分析架構、資料流、權限、成本、重構、長期維護。必須先由大型推理模型 (Sonnet / Opus / Thinking) 產方案，再交由寫碼模型執行。
 
 ## Boundaries
 
-- Do not turn `memory-bank` into a session transcript.
-- Do not copy large Notion pages or external articles into it.
-- Do not store secrets, credentials, API keys, deployment IDs, or private account data.
-- Do not force manual approval after every tiny edit unless the user asked for that gate.
-- Do not commit automatically; follow the repository git rules.
-
+- Do not turn memory-bank into a session transcript.
+- Do not store secrets, credentials, API keys in any generated file.
+- 確實執行 Git 煞車機制，切勿無休止地除錯盲猜。
