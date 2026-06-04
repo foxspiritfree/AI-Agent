@@ -7,6 +7,12 @@ description: Use this skill for SOC, SecOps, alert analysis, incident triage, sh
 
 Use this skill for SOC / SecOps work where the output must be clear, traceable, and handoff-ready.
 
+## Workflow Boundary
+
+本 skill 負責事件分流、證據整理、交接摘要與 SOC SOP 改善，不把事件分析本身交給 Superpowers。
+
+只有當任務變成 SOC 工具開發、偵測規則程式修改、自動化腳本、測試、驗證或交付時，才接對應 Superpowers 工程流程。
+
 ## Core Principles
 
 - Separate facts, assumptions, and open questions.

@@ -78,11 +78,11 @@ Get-Content .\400_Knowledge\body\config\classification_map.md -TotalCount 80
 
 ## 舊流程對應
 
-舊 `Gemini.md` 中的 `articles/`、`study/`、`body/`、`Published/` 對應到新系統：
+舊 `Gemini.md` 中的 `articles/`、`study/`、`body/`、`Published/` 已移到 legacy reference，對應到新系統：
 
 | 舊路徑 | 新路由 |
 | --- | --- |
-| `400_Knowledge/知識庫/articles/` | `200_Reference/imported/legacy-article-enrichment/articles/` 或新草稿進 `100_Todo/drafts/` |
-| `400_Knowledge/知識庫/Published/` | 原文樣本進 `200_Reference/writing-samples/social/`；加工版進 `200_Reference/imported/legacy-article-enrichment/published/` |
-| `400_Knowledge/知識庫/study/` | 正式來源改用 `400_Knowledge/study/01_processed/` |
-| `400_Knowledge/知識庫/body/` | 正式來源改用 `400_Knowledge/body/01_processed/` |
+| `200_Reference/imported/legacy-knowledge-base/知識庫/articles/` | `200_Reference/imported/legacy-article-enrichment/articles/` 或新草稿進 `100_Todo/drafts/` |
+| `200_Reference/imported/legacy-knowledge-base/知識庫/Published/` | 原文樣本進 `200_Reference/writing-samples/social/`；加工版進 `200_Reference/imported/legacy-article-enrichment/published/` |
+| `200_Reference/imported/legacy-knowledge-base/知識庫/study/` | 正式來源改用 `400_Knowledge/study/01_processed/` |
+| `200_Reference/imported/legacy-knowledge-base/知識庫/body/` | 正式來源改用 `400_Knowledge/body/01_processed/` |

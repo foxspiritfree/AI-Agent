@@ -8,6 +8,7 @@
 
 - `skills/` 是方法論與 SOP，會被不同任務引用。
 - `workflows/` 是固定儀式、slash 指令 shim 或 playbook shortcut，通常只指向一個或多個正式 skill。
+- `superpowers` 是工程流程方法論套件；只有任務進入規劃、實作、TDD、除錯、驗證、code review、worktree 或交付時才接入。
 
 正式步驟不要同時寫在 workflow 和 skill；若兩者重疊，以 `skills/` 為單一真相來源。
 
@@ -21,11 +22,11 @@
 - `inspiration-ingest.md`：處理 Notion「靈感蒐集」到 study/body 卡片盒或文章素材的分流。
 - `article-enrichment.md`：把文章草稿接上 `study` / `body` 卡片盒資料，產生延伸知識補充。
 - `today.md`：從 Notion 今日可做事項與任務資料庫整理今日執行順序，正式流程指向 `notion-task-triage` skill。
-- `open-threads-to-notion.md`：把本機 Markdown 的 `Open Threads` / 待釐清事項打包成 Notion 待安排項目。
-- `project-todo-capture.md`：掃描本機專案待辦、待釐清、待整合事項，打包成 Notion 待安排項目。
+- `sync-todos.md`：掃描本機專案待辦、待釐清與 Open Threads，打包成 Notion 待安排項目。正式流程指向 `project-todo-capture` skill。
 - `self-brain-capture.md`：把對話、偏好、決策、人物/專案脈絡沉澱進 `400_Knowledge/self_brain`。
-- `project-memory.md`：為 app / 技術專案建立或接續 `memory-bank/`，正式流程指向 `project-memory` skill。
+- `project-memory.md`：專案大腦入口。為專案建立或接續 `memory-bank/`，包含 PRD、功能分析與日常任務執行，指向 `project-memory` 巨型 skill。
 - `finance-review.md`：檢查 Notion「帳務管理」待處理事項，正式流程指向 `finance-admin-review` skill。
 - `gas-debug.md`：Google Apps Script 除錯快捷入口，正式流程指向 `gas` skill。
-- `code-review.md`：本專案 code review 快捷入口，正式流程指向 Superpowers。
+- `code-review.md`：本專案的專案優化與 Code Review 完整工作流，自帶分析、修改與驗證劇本。
 - `agent-setup-review.md`：檢查 AI Agent 設定是否過長、衝突或需要改寫，正式流程指向 `ai-agent-collaboration` skill。
+- `system-build.md`：新系統開發完整工作流。從問題討論到夜間交付到後期清單的端到端捷徑，指向 `fullstack` 巨型 skill。

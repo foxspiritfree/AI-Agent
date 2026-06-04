@@ -1,4 +1,4 @@
-﻿# Fullstack Skill
+# Fullstack Skill
 
 ## 適用情境
 

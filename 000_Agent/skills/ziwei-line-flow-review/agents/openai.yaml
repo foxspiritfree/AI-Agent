@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ziwei LINE Flow Review"
+  short_description: "Verify LINE flow from code before fixes"
+  default_prompt: "Review the Ziwei LINE flow step by step. Inspect code, docs, and the discussion map first, then report actual behavior, written rules, gaps, recommended fix, and acceptance criteria."

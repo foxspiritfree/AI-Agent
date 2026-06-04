@@ -28,6 +28,12 @@
       "matches": ["https://www.youtube.com/watch*", "https://youtube.com/watch*"],
       "js": ["youtubePageExtractor.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://www.youtube.com/watch*", "https://youtube.com/watch*"],
+      "js": ["xhrInterceptor.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
     }
   ],
   "action": {

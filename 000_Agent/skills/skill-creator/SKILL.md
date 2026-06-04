@@ -7,6 +7,12 @@ description: Create new skills, modify and improve existing skills, and measure 
 
 A skill for creating new skills and iteratively improving them.
 
+## Workflow Boundary
+
+本 skill 是建立、修改與評估本專案 skills 的主入口。
+
+需要通用 skill 寫作方法論時，可讀 `000_Agent/skills/superpowers/writing-skills/SKILL.md` 作補充；但本專案 skill 的路由、命名、資料放置與現有檔案一致性，以本 skill、`INDEX.md`、`CAPABILITY_MAP.md` 和 `CORE_RULES.md` 為準。
+
 At a high level, the process of creating a skill goes like this:
 
 - Decide what you want the skill to do and roughly how it should do it

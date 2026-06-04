@@ -9,6 +9,12 @@ description: Use this skill when reviewing UI, UX flows, visual layout, table de
 
 Act as a UI/UX reviewer focused on usability, information hierarchy, visual clarity, accessibility, and experience quality.
 
+## Workflow Boundary
+
+本 skill 負責 UI/UX 判斷、畫面方向、互動設計與體驗品質，不負責工程施工方法。
+
+當設計方向已定稿且要落地成前端任務時，交給 `superpowers/writing-plans` 拆實作計畫；進入實作、驗證或 code review 時，再接 `superpowers/executing-plans`、`verification-before-completion` 或 code review 相關 skill。
+
 ## When to use
 
 Use this skill for:
@@ -24,6 +30,23 @@ Use this skill for:
 - decision interface and choice design
 - experience strategy review
 - accessibility review
+
+## From PRD to design draft
+
+Use this when a user provides a PRD (or system positioning doc) and wants design output before implementation begins.
+
+1. Read the PRD: extract system positioning, target user, core flows, and constraints.
+2. Identify the key screens or interaction points (max 5-7 for first pass).
+3. Produce **two or more design directions** that differ in layout approach, visual tone, or information structure — not just color variations. Label each direction clearly (e.g., Direction A: dashboard-first, Direction B: task-flow-first).
+4. For each direction, describe:
+   - Layout structure and primary navigation pattern
+   - Visual tone (clean/operational/expressive/editorial)
+   - Key interaction pattern for the primary flow
+   - One trade-off or risk of this direction
+5. If relevant, propose an icon set direction or icon style (e.g., outlined, filled, custom illustrative) that fits the visual tone.
+6. Ask the user to pick a direction (or mix elements) before proceeding to detailed screens.
+
+Do not produce a single direction and call it a design. Multiple options let the user calibrate faster than iterating on one version.
 
 ## Core workflow
 

@@ -46,4 +46,4 @@ python .\400_Knowledge\_pipeline\zettelkasten_pipeline.py --profile study --limi
 ## 現階段限制
 
 - Profile YAML 目前支援簡單 `key: value` 格式。
-- 舊入口 `study/process_notesv3try.py` 與 `body/process_notesv3try.py` 仍保留，不改行為。
+- 舊入口 `study/process_notesv3try.py` 與 `body/process_notesv3try.py` 已改成 deprecated wrapper，會轉呼叫本共用 pipeline。

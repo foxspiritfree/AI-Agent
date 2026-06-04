@@ -10,7 +10,8 @@ export default defineConfig({
         popup: resolve(__dirname, "src/popup/popup.html"),
         offscreen: resolve(__dirname, "src/offscreen/offscreen.html"),
         serviceWorker: resolve(__dirname, "src/background/serviceWorker.ts"),
-        youtubePageExtractor: resolve(__dirname, "src/content/youtubePageExtractor.ts")
+        youtubePageExtractor: resolve(__dirname, "src/content/youtubePageExtractor.ts"),
+        xhrInterceptor: resolve(__dirname, "src/content/xhrInterceptor.ts")
       },
       output: {
         entryFileNames: "[name].js",

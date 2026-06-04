@@ -28,6 +28,17 @@ let panelStatusTimer: number | null = null;
 let lastRenderedSttResultId: string | null = null;
 let panelMarkdown = "";
 
+window.addEventListener("message", (event) => {
+  if (event.source === window && event.data && event.data.source === "yt-caption-interceptor") {
+    const { url, raw } = event.data;
+    void chrome.runtime.sendMessage({
+      type: "CAPTION_RECORD_CAPTURED_CONTENT",
+      url,
+      raw
+    });
+  }
+});
+
 chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
   if (!isExtractPageDataMessage(message)) {
     if (isTogglePanelMessage(message)) {
@@ -513,38 +524,24 @@ async function fetchBestCaptionForTrack(track: CaptionTrack): Promise<FetchCapti
 }
 
 async function fetchCapturedTimedtextForPanel(track: CaptionTrack): Promise<FetchCaptionResponse> {
-  const response = await chrome.runtime.sendMessage({ type: "CAPTION_GET_CAPTURED_URLS" });
+  const response = await chrome.runtime.sendMessage({ type: "CAPTION_GET_CAPTURED_CONTENTS" });
 
-  if (!isExtensionResponse<{ urls: string[] }>(response) || !response.ok) {
-    throw new Error("沒有 captured timedtext URL。");
+  if (!isExtensionResponse<{ contents: Array<{ url: string; raw: string }> }>(response) || !response.ok) {
+    throw new Error("沒有 captured timedtext 內容。");
   }
 
-  for (const candidate of response.data.urls.filter((url) => isMatchingTimedtextUrl(url, track.languageCode))) {
-    for (const fmt of ["json3", "", "srv3", "vtt"]) {
-      const url = new URL(candidate);
-      if (fmt) url.searchParams.set("fmt", fmt);
-      const result = await fetchTimedtextUrlForPanel(url.toString(), fmt || "unknown");
-      if ("raw" in result) return result;
-    }
+  const matches = response.data.contents.filter((item) => isMatchingTimedtextUrl(item.url, track.languageCode));
+  if (matches.length > 0) {
+    const match = matches[0];
+    return {
+      raw: match.raw,
+      format: inferCaptionFormat(match.raw)
+    };
   }
 
   throw new Error("captured timedtext fallback 失敗。");
 }
 
-async function fetchTimedtextUrlForPanel(url: string, format: string): Promise<FetchCaptionResponse | { error: string }> {
-  try {
-    const response = await fetch(url, { credentials: "include", cache: "no-store" });
-    const raw = await response.text();
-    if (!response.ok) return { error: `${format}: HTTP ${response.status}` };
-    if (!raw.trim()) return { error: `${format}: empty response` };
-    return {
-      raw,
-      format: format === "json3" || format === "srv3" || format === "vtt" ? format : inferCaptionFormat(raw)
-    };
-  } catch (error) {
-    return { error: error instanceof Error ? error.message : String(error) };
-  }
-}
 
 function setPanelMarkdown(value: string, segments: TranscriptSegment[]): void {
   panelMarkdown = value;

@@ -9,7 +9,6 @@ import { extractPlayerResponseFromText } from "../core/playerResponseExtractor";
 import type {
   CaptionTrack,
   ExtractPageDataResponse,
-  FetchCapturedCaptionRequest,
   FetchCaptionResponse,
   FetchInnertubeCaptionRequest,
   FetchTranscriptPanelResponse,
@@ -26,7 +25,7 @@ const REQUEST_TYPE = "TRANSCRIBE_EXTRACT_PAGE_DATA";
 const FETCH_CAPTION_TYPE = "TRANSCRIBE_FETCH_CAPTION_TRACK";
 const FETCH_TRANSCRIPT_PANEL_TYPE = "TRANSCRIBE_FETCH_TRANSCRIPT_PANEL";
 const FETCH_INNERTUBE_CAPTION_TYPE = "TRANSCRIBE_FETCH_INNERTUBE_CAPTION";
-const CAPTION_GET_CAPTURED_URLS_TYPE = "CAPTION_GET_CAPTURED_URLS";
+const CAPTION_GET_CAPTURED_CONTENTS_TYPE = "CAPTION_GET_CAPTURED_CONTENTS";
 const CAPTION_CLEAR_CAPTURED_URLS_TYPE = "CAPTION_CLEAR_CAPTURED_URLS";
 const TRIGGER_CAPTION_TYPE = "TRANSCRIBE_TRIGGER_CAPTION_PLAYBACK";
 const STORAGE_FORMAT_KEY = "preferredMarkdownFormat";
@@ -445,42 +444,31 @@ async function fetchCapturedTimedtextFallback(track: CaptionTrack): Promise<Fetc
     throw new Error("找不到目前分頁。");
   }
 
-  const errors: string[] = [];
-
   for (let attempt = 0; attempt < 6; attempt += 1) {
-    const request: FetchCapturedCaptionRequest & { type: typeof CAPTION_GET_CAPTURED_URLS_TYPE } = {
-      type: CAPTION_GET_CAPTURED_URLS_TYPE,
-      tabId: tab.id,
-      languageCode: track.languageCode
+    const request = {
+      type: CAPTION_GET_CAPTURED_CONTENTS_TYPE,
+      tabId: tab.id
     };
     const response = await chrome.runtime.sendMessage(request);
 
-    if (!isExtensionResponse<{ urls: string[] }>(response) || !response.ok) {
-      throw new Error("沒有 captured timedtext URL。");
+    if (!isExtensionResponse<{ contents: Array<{ url: string; raw: string }> }>(response) || !response.ok) {
+      throw new Error("沒有 captured timedtext 內容。");
     }
 
-    const candidates = response.data.urls.filter((url) => isMatchingTimedtextUrl(url, track.languageCode));
-
-    for (const candidate of candidates) {
-      for (const fmt of ["json3", "", "srv3", "vtt"]) {
-        const url = new URL(candidate);
-        if (fmt) {
-          url.searchParams.set("fmt", fmt);
-        }
-
-        const result = await fetchTimedtextUrl(url.toString(), fmt || "unknown");
-        if ("raw" in result) {
-          return result;
-        }
-        errors.push(result.error);
-      }
+    const matches = response.data.contents.filter((item) => isMatchingTimedtextUrl(item.url, track.languageCode));
+    if (matches.length > 0) {
+      const match = matches[0];
+      return {
+        raw: match.raw,
+        format: inferCaptionFormat(match.raw)
+      };
     }
 
     await triggerCaptionPlayback(track);
     await delay(900);
   }
 
-  throw new Error(`captured timedtext fallback 失敗：${errors.join("; ") || "no matching captured URL"}`);
+  throw new Error("captured timedtext fallback 失敗。");
 }
 
 async function fetchInnertubeCaptionFallback(track: CaptionTrack): Promise<FetchCaptionResponse> {
@@ -511,27 +499,6 @@ async function fetchInnertubeCaptionFallback(track: CaptionTrack): Promise<Fetch
   return response.data;
 }
 
-async function fetchTimedtextUrl(url: string, format: string): Promise<FetchCaptionResponse | { error: string }> {
-  try {
-    const response = await fetch(url, { credentials: "include", cache: "no-store" });
-    const raw = await response.text();
-
-    if (!response.ok) {
-      return { error: `${format}: HTTP ${response.status}` };
-    }
-
-    if (!raw.trim()) {
-      return { error: `${format}: empty response` };
-    }
-
-    return {
-      raw,
-      format: format === "json3" || format === "srv3" || format === "vtt" ? format : inferCaptionFormat(raw)
-    };
-  } catch (error) {
-    return { error: `${format}: ${error instanceof Error ? error.message : String(error)}` };
-  }
-}
 
 function isMatchingTimedtextUrl(url: string, languageCode: string): boolean {
   try {

@@ -5,7 +5,7 @@ const STT_LAST_RESULT_KEY = "sttLastResult";
 type SttStatus = "idle" | "recording" | "transcribing";
 
 let creatingOffscreenDocument: Promise<void> | null = null;
-const capturedCaptionUrlsByTab = new Map<number, string[]>();
+const capturedCaptionsByTab = new Map<number, Array<{ url: string; raw: string }>>();
 
 chrome.action.onClicked.addListener((tab) => {
   if (!tab.id) return;
@@ -13,29 +13,32 @@ chrome.action.onClicked.addListener((tab) => {
   void togglePanel(tab.id);
 });
 
-chrome.webRequest.onBeforeRequest.addListener(
-  (details) => {
-    if (typeof details.tabId !== "number" || details.tabId < 0) return;
-
-    const urls = capturedCaptionUrlsByTab.get(details.tabId) ?? [];
-    const nextUrls = [details.url, ...urls.filter((url) => url !== details.url)].slice(0, 10);
-    capturedCaptionUrlsByTab.set(details.tabId, nextUrls);
-  },
-  { urls: ["https://www.youtube.com/api/timedtext*"] }
-);
-
 chrome.runtime.onMessage.addListener((message: unknown, sender, sendResponse) => {
   if (!isObject(message)) return false;
 
-  if (message.type === "CAPTION_GET_CAPTURED_URLS") {
-    const tabId = Number(message.tabId);
-    sendResponse({ ok: true, data: { urls: capturedCaptionUrlsByTab.get(tabId) ?? [] } });
+  if (message.type === "CAPTION_RECORD_CAPTURED_CONTENT") {
+    const tabId = sender.tab?.id;
+    if (typeof tabId === "number" && tabId >= 0) {
+      const contents = capturedCaptionsByTab.get(tabId) ?? [];
+      const nextContents = [
+        { url: String(message.url), raw: String(message.raw) },
+        ...contents.filter((item) => item.url !== message.url)
+      ].slice(0, 10);
+      capturedCaptionsByTab.set(tabId, nextContents);
+    }
+    sendResponse({ ok: true, data: true });
+    return false;
+  }
+
+  if (message.type === "CAPTION_GET_CAPTURED_CONTENTS") {
+    const tabId = Number(message.tabId || sender.tab?.id);
+    sendResponse({ ok: true, data: { contents: capturedCaptionsByTab.get(tabId) ?? [] } });
     return false;
   }
 
   if (message.type === "CAPTION_CLEAR_CAPTURED_URLS") {
-    const tabId = Number(message.tabId);
-    capturedCaptionUrlsByTab.delete(tabId);
+    const tabId = Number(message.tabId || sender.tab?.id);
+    capturedCaptionsByTab.delete(tabId);
     sendResponse({ ok: true, data: true });
     return false;
   }

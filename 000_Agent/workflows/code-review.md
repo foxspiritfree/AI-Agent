@@ -1,15 +1,38 @@
-# Code Review Workflow
+# code-review — 專案優化與 Code Review 完整工作流
 
-## 目標
+這是針對現有專案進行「優化、除錯、重構、Code Review」的單一快捷入口。
+當你載入此 workflow 時，請**直接遵守**以下 End-to-End 的優化劇本，不需再跳轉其他文件。
 
-快速找出 bug、風險、可維護性問題，並給出最小修改方案。
+## 執行原則
+- **繁體中文**：全程使用繁體中文回覆。
+- **最小修改**：除非要求全面重構，否則優先提供能解決問題的最小範圍修改。
+- **安全第一**：確保重構不改變現有業務邏輯 (除非找出明確 bug)。
 
-## 執行方式
+---
 
-本 workflow 只是快捷入口；正式 review 流程只維護在：
+## 優化與審查劇本 (Optimization Playbook)
 
-- `000_Agent/skills/superpowers/requesting-code-review/SKILL.md`
-- `000_Agent/skills/superpowers/receiving-code-review/SKILL.md`
-- `000_Agent/skills/superpowers/verification-before-completion/SKILL.md`
+請依序執行以下 4 個階段。不可跳過任何階段：
 
-本專案偏好：使用繁體中文、先列發現、優先最小修改、附驗證方式。
+### Phase 1: 脈絡分析 (Context Analysis)
+1. 檢視使用者提供的程式碼或指定範圍。
+2. 釐清目前架構、依賴關係以及潛在的技術債。
+3. **如果涉及到特定前端框架或外部套件 (如 GSAP)**，你**必須自動**讀取 `.agents/skills/` 內對應的官方 SOP，以確保寫出的語法符合最新規範。
+
+### Phase 2: 問題指出與方案設計 (Diagnosis & Design)
+列出你的發現，並按以下格式回報：
+- **[Bug]**：會導致崩潰或邏輯錯誤的地方。
+- **[效能/安全]**：效能瓶頸或潛在資安漏洞（如 XSS, Prompt Injection, 缺少防護）。
+- **[可維護性 (Bad Smells)]**：命名不佳、過度耦合、可讀性差。
+- **[修改方案]**：具體的重構或修正計畫。在動手改 code 之前，先列出預計修改的檔案與策略。
+
+### Phase 3: TDD 與最小範圍修改 (Implementation)
+- 確保修改範圍專注於 Phase 2 中提議的項目。
+- 如果專案有撰寫測試案例的習慣，請先補齊或更新 Unit Test。
+- 提供修正後的程式碼 (Patch)，並確保語法正確、無殘留測試用 dummy code。
+
+### Phase 4: 驗證計畫 (Verification Before Completion)
+修改完成後，主動提供驗證清單。
+- 說明使用者需要執行哪些指令來確認修改生效（例如：`npm test`、在瀏覽器中點擊某個按鈕）。
+- 列出任何修改後可能產生的**副作用或潛在風險**。
+- 若有前端介面更動，提醒使用者注意 RWD 或特定裝置上的顯示狀況。

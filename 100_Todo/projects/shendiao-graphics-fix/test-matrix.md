@@ -37,8 +37,8 @@
 
 | 補丁 | 檔案 | 修改 | 還原 |
 | --- | --- | --- | --- |
-| Encounter rate v1 | `C:\Users\join6\Games\ShenDiao-dgVoodoo\ShenDiao.exe` | offset `0x13060c` float `1.5 -> 0.5` | `python analysis-tools\encounter_rate_patch.py restore` |
-| Growth curve v1 | `C:\Users\join6\Games\ShenDiao-dgVoodoo\ShenDiao.exe` | 7 組成長表，升級需求減半 | `python analysis-tools\growth_curve_patch.py restore` |
+| Encounter rate v2 | `C:\Users\join6\Games\ShenDiao-dgVoodoo\ShenDiao.exe` | 修改 `0xf7a6e` 與 `0xf7a77` 機率常數（預設舒適：高 `2%` / 低 `0%`） | `python shendiao-graphics-fix\analysis-tools\encounter_rate_patch.py restore` |
+| Growth curve v2 | `C:\Users\join6\Games\ShenDiao-dgVoodoo\ShenDiao.exe` | 8 組成長表，升級需求降為 20% | `python shendiao-graphics-fix\analysis-tools\growth_curve_patch.py restore` |
 
 ## 下一個驗證點
 
