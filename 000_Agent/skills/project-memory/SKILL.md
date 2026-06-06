@@ -66,11 +66,15 @@ When the user asks you to continue working or execute the next task, **DO NOT de
 3. **Verification:**
    - Run tests or provide exact commands for the user to verify.
    - Fix bugs if any arise.
-4. **Update Memory:** 
-   - Mark the task as done.
-   - Log the completed work in `memory-bank/progress.md`.
-   - Update `architecture.md` if the structural design changed.
-5. **Git Brake:** After completing ONE logical task, STOP. Ask the user to `git commit` before proceeding to the next item in the plan. Do not endlessly guess or proceed without saving.
+4. **Update Memory (Mandatory State Sync):** 
+   - Mark the task as done in `implementation-plan.md` or `tasks/`.
+   - Log the completed work in `memory-bank/progress.md`. This is strictly required before finishing.
+   - Update `architecture.md` and `tech-stack.md` if the structural design or dependencies changed.
+   - Clean up any outdated task files or redundant drafts.
+   - **Lesson Learned Capture (經驗萃取):** If you resolved a difficult bug, worked around environment/tool issues (especially Windows/PowerShell specifics), or made a technical breakthrough, ask the user if this should be recorded under `## 踩坑筆記` in `000_Agent/memory/MEMORY.md`.
+5. **Git Brake & Clean Workspace:** After completing ONE logical task, STOP. 
+   - **Crucial Rule:** Never create versioned backup files (e.g., `feature_v2.js`). Always modify the single source of truth file.
+   - Ask the user to `git commit` before proceeding to the next item. Do not endlessly guess or proceed without saving.
 
 ## Critical Boundaries
 - **External Libraries:** If implementing frontend animations or specific libraries (e.g., GSAP), automatically read `.agents/skills/*` before coding.

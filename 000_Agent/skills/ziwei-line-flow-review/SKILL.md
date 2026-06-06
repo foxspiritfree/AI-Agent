@@ -11,27 +11,25 @@ Review the LINE user flow from real implementation evidence, then turn mismatche
 
 ## Required Sources
 
-Start from the project root, usually:
-
-`C:\Users\join6\Desktop\紫微斗數`
+Start from the project root (e.g., `d:\AI\ziwei-main` or `C:\Users\join6\Desktop\紫微斗數`).
 
 Read project instructions first:
-
 - `AGENTS.md`
-- `C:\Users\join6\AI-Agent\AGENTS.md`
+- `C:\Users\join6\AI-Agent\AGENTS.md` or `D:\AI\AI-Agent\AGENTS.md`
 
 Use these project files as the main evidence surface:
-
 - `memory-bank/line-user-flow-discussion-map.md`
 - `app/server.ts`
 - `app/src/App.tsx`
 - `app/scripts/create-line-rich-menu.mjs`
 - `app/scripts/line-flow-v2_4-regression.ts`
 - `app/docs/current-mechanism-analysis.md`
+- `app/docs/ux-roadmap-v4.md`
+- `app/docs/liff-design-system-v4.md`
 - `memory-bank/PRD.md`
 - `memory-bank/progress.md`
 
-Use targeted `Select-String` searches before broad reads.
+Use targeted `Select-String` or Native PowerShell searches before broad reads.
 
 ## Review Rule
 
@@ -76,6 +74,7 @@ Before making a claim, inspect the relevant files:
 - Birth chart LIFF UI: `app/src/App.tsx`, search `LiffBirthChartForm`
 - Star Guide LIFF/UI: `app/src/App.tsx`, search `LiffQuestion`
 - API behavior: `app/server.ts`, search endpoint path such as `/api/liff/birth-chart`
+- Visual Guidelines & Themes: `app/docs/ux-roadmap-v4.md`, `app/docs/liff-design-system-v4.md`
 - Existing rules: `app/docs/current-mechanism-analysis.md`, `memory-bank/PRD.md`, `memory-bank/implementation-plan.md`
 - Regression expectations: `app/scripts/line-flow-v2_4-regression.ts`
 
@@ -88,8 +87,12 @@ Preserve these expectations unless the user explicitly changes them:
 - Rich Menu "建立命盤" should directly open LIFF.
 - If an unbound user taps "星星指引", guide them to tap Rich Menu "建立命盤"; do not make the bot message the primary LIFF entry.
 - Building a chart is not one-step: fill data, generate A/B/C, select the closest version, confirm binding.
-- A/B/C is current flow, not legacy, unless code/docs later prove otherwise.
-- Existing bound users must not be allowed to freely create/modify charts; enforce the written monthly modification rule at the backend API layer, not only at LINE entry points.
+- A/B/C is current flow, not legacy.
+- Under UX Roadmap V4:
+  - Reading report page must use a warm **parchment theme** (`#fdfaf3` bg, `#2d241c` text, Serif font) with no follow-up questions shown.
+  - LINE Flex Messages must adapt to the parchment colors and burgundy accent/button theme with button label "💌 拆開專屬命理信件".
+  - Onboarding birth chart selection must use a mysterious **mystic gradient theme** with candidate cards resembling floating "memory fragments" and confirmation text "這條軌跡屬於我的過去".
+- Existing bound users must not be allowed to freely create/modify charts; enforce the written monthly modification rule at the backend API layer.
 - Do not ask the user to identify gaps that code inspection can find.
 
 ## Flow Review Output

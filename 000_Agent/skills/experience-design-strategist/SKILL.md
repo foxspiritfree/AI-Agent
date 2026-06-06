@@ -38,6 +38,7 @@ Use these levers deliberately:
 - **Intuitive action**: Make users quickly know what to do and why it matters.
 - **Beneficial friction**: Keep friction only when it increases commitment, understanding, or personalization.
 - **Growth feeling**: Let users choose difficulty, receive feedback, fill gaps, and notice improvement.
+- **Thematic Immersion (情境沉浸)**: Design sensory, textual, and visual cues to form a consistent narrative world (e.g., classical parchment magic style, mystic crystal ball theme) that replaces dull utility forms with meaningful ritual.
 - **Emotional memory**: Create a moment of relief, confidence, surprise, recognition, achievement, or trust.
 - **Peak and ending**: Design the most intense moment and the final moment because they shape remembered experience.
 - **Continuity**: Use unresolved questions, next steps, and progress loops to make the experience continue.

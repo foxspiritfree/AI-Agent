@@ -12,16 +12,7 @@
 
     cat $HOME\AI-Agent\000_Agent\CORE_RULES.md
 
-## 3. 修改完 CORE_RULES 後同步到各 AI 入口檔
 
-    powershell -ExecutionPolicy Bypass -File "$HOME\AI-Agent\sync-agent.ps1"
-
-會同步到：
-
-    CLAUDE.md
-    AGENTS.md
-    GEMINI.md
-    .cursorrules
 
 ## 4. 啟動各 AI CLI
 
@@ -75,14 +66,10 @@
     git commit -m "Update AI-Agent rules"
     git push
 
-## 9. 在新電腦下載設定
+## 8. 在新電腦下載設定
 
     cd $HOME
     git clone https://github.com/foxspiritfree/AI-Agent.git
-
-下載後執行：
-
-    powershell -ExecutionPolicy Bypass -File "$HOME\AI-Agent\sync-agent.ps1"
 
 ## 10. 讓 AI 先讀你的設定
 

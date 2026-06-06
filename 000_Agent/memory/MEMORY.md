@@ -34,7 +34,9 @@
 
 ## 踩坑筆記
 
-（尚無）
+### Git Working Tree 變更丟失風險
+- **情境**：在多人/多 Agent 跨 Session 協作且有多個分支時，如果 working tree 存在上個 Session 累積的 uncommitted 變更，在當前 Session 輕易執行 `git checkout -- <file>` 來恢復單一檔案的語法錯誤，會直接抹除 working tree 的未提交變更。
+- **解法**：執行任何丟棄變更的操作前，務必先用 `git status` 核對工作區。如有未 commit 的重要變更，應優先使用 `git stash` 備份，切勿盲目直接 checkout 覆蓋。
 
 ## 環境速查表
 
