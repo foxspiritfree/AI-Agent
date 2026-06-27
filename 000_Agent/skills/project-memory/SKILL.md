@@ -44,6 +44,7 @@ tasks/
 1. **Clarify Needs:** Ask 1~2 key questions to clarify the business goal and boundaries.
 2. **Draft PRD & Blueprint:** Draft `memory-bank/PRD.md` (System positioning, Constraints, User Stories) and `architecture.md`.
 3. **Execution Plan:** Create `memory-bank/implementation-plan.md`.
+   - **Task Naming Rule (絕對順序編號)**: Always use sequential numbering for task files to preserve execution order (e.g., `tasks/01-setup-db.md`, `tasks/02-create-api.md`). Do not use ambiguous names without numbers.
 4. **Review & Build:** After user approval, physically create the `memory-bank/` and `tasks/` folders.
 
 ## Scenario 2: Add a Feature (追加功能 / PM 視角分析)
@@ -52,6 +53,7 @@ When the user wants to add a feature or pivot:
 1. **PM Diagnosis:** Does this serve the core goal? What are the trade-offs? Draft a `<feature>-spec.md` in `app/docs/` detailing Scope, Non-goals, and Acceptance Criteria.
 2. **Impact Analysis:** Read `memory-bank/architecture.md` and evaluate the impact on existing systems.
 3. **Task Breakdown:** Slice the feature into actionable tasks inside `tasks/feature/` or `tasks/simple/`.
+   - **Task Naming Rule (絕對順序編號)**: Always use sequential numbering for task files to preserve execution order (e.g., `tasks/01-setup-db.md`, `tasks/02-create-api.md`). Do not use ambiguous names without numbers.
 4. **Update Plan:** Append the new tasks to `memory-bank/implementation-plan.md`.
 
 ## Scenario 3: Continue a Project (日常開發與自主執行)

@@ -45,6 +45,7 @@ description: Use when discussing Zi Wei Dou Shu reading practice, narrator outpu
 - Do not ask the user to decide after trade-off analysis; recommend one option.
 - Keep discussion iterative: one step or one disputed point at a time.
 - When knowledge is draft, say it is draft and use it as a discussion aid, not production truth.
+- Do not trust LLM-generated calendar facts in reading output. Lunar month to Gregorian date ranges, timing windows, and other structured timing facts must be computed or checked against project code/knowledge; existing parenthetical dates in generated prose should be corrected rather than preserved.
 
 ## Current Discussion Frame
 

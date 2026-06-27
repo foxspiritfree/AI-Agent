@@ -54,7 +54,7 @@
 
 - 現有 skill 短期保留原名，避免破壞入口。
 - 新 skill 優先用能力導向命名，例如 `requirement-analysis`、`incident-triage`、`api-contract-design`。
-- 現有 `workflows` 短期保留；語意上視為 playbook / shortcut entry。
+- 現有 `workflows` 僅保留無法由單一 skill 涵蓋的獨立 playbook；純轉發 skill 的 shortcut 不再保留。
 
 ## Active Project
 

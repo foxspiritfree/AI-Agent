@@ -1,0 +1,21 @@
+{
+  "name": "writing-flywheel",
+  "version": "1.0.0",
+  "description": "從 Inspiration 與個人知識庫產生寫作 packet，外部熱門訊號只作為新鮮度檢查。",
+  "type": "module",
+  "scripts": {
+    "fetch": "node ./scripts/fetch-threads-top-posts.mjs",
+    "fetch:scraper": "node ./scripts/fetch-threads-top-posts.mjs --source=scraper",
+    "fetch:own": "node ./scripts/fetch-own-history.mjs",
+    "fetch:own:dry-run": "node ./scripts/fetch-own-history.mjs --dry-run",
+    "ai:preprocess": "node ./scripts/preprocess-topic-candidates.mjs",
+    "report": "node ./scripts/fetch-threads-top-posts.mjs --from-raw",
+    "dry-run": "node ./scripts/fetch-threads-top-posts.mjs --dry-run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "playwright-core": "^1.61.0"
+  }
+}

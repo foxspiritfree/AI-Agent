@@ -1,0 +1,29 @@
+{
+  "project": "writing-flywheel",
+  "sources": {
+    "external_topic_reports": "data/reports/topic-candidates-YYYY-MM-DD.md",
+    "raw_threads_reports": "data/reports/threads-top-posts-YYYY-MM-DD.md",
+    "inspiration": "../../inbox/Inspiration.md",
+    "self_brain": "../../../400_Knowledge/self_brain/",
+    "study_classification_map": "../../../400_Knowledge/study/config/classification_map.md",
+    "body_classification_map": "../../../400_Knowledge/body/config/classification_map.md",
+    "study_cards": "../../../400_Knowledge/study/01_processed/",
+    "body_cards": "../../../400_Knowledge/body/01_processed/",
+    "journal": "../../../300_Journal/",
+    "self_brain_project_note": "../../../400_Knowledge/self_brain/projects/writing-flywheel.md",
+    "threads_tracker": "threads_daily_tracker.json",
+    "posts_archive": "posts_by_date.md",
+    "brand_voice": "brand_voice.md",
+    "multi_platform_template": "one_draft_multi_platform_template.md"
+  },
+  "outputs": {
+    "weekly_packets": "data/weekly-packets/",
+    "user_replies": "data/user-replies/",
+    "threads_drafts": "drafts/threads/",
+    "longform_drafts": "drafts/longform/",
+    "platform_adapted": "drafts/platform-adapted/",
+    "review_pending": "review/pending/",
+    "review_approved": "review/approved/",
+    "review_published": "review/published/"
+  }
+}

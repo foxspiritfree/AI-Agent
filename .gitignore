@@ -1,4 +1,6 @@
 400_Knowledge/**/.env
+100_Todo/projects/writing-flywheel/.env
+node_modules/
 400_Knowledge/**/logs/
 400_Knowledge/**/*.zip
 400_Knowledge/**/__pycache__/

@@ -2,7 +2,7 @@
 
 ## Summary
 
-使用者的生活偏好可概括為：建立低摩擦、高自治、可持續運作的個人環境。飲食、消費、旅遊、娛樂、運動與工具選擇都傾向功能性、可預測、可追蹤與長期划算。
+使用者的生活偏好可概括為：建立低摩擦、高自治、可持續運作的個人環境。飲食、消費、旅遊、娛樂、運動與工具選擇都傾向功能性、可預測、可追蹤與長期划算。整合性格資料後，這種偏好更像是用穩定配置保護認知能量與長期輸出，而不是單純節省或保守。source: personality lens | confidence: interpretive
 
 ## Current Understanding
 
@@ -13,6 +13,9 @@
 - 旅遊偏好結構化規劃、交通/住宿機能、在地文化觀察與服務流程學習。
 - 娛樂偏好有深度、技術性、系統性或世界觀可研究的內容，例如策略/操作型遊戲、經典漫畫、紀錄片、古典音樂拆解、嘻哈 flow 與歌詞分析。
 - 科技產品偏好雲端整合、軟體調教與低摩擦工作流；曾明確出現 Notion 與 Google Pixel 偏好。
+- 休息與興趣也偏向理解、分析與表達；娛樂內容若有結構、技術、世界觀或可拆解性，更容易形成真正的恢復感。source: personality lens | confidence: interpretive
+- 金錢、工具與生活空間偏好可見品質、可追蹤秩序與長期穩定感；消費與空間配置適合用總成本、維護性、可用年限、低干擾與是否降低摩擦來判斷。source: personality lens | confidence: interpretive
+- 現階段生活安排容易被創作、產品、知識輸出或學習實驗牽動；需要用固定作息、清楚工具邊界與少量高品質娛樂來避免輸出焦慮吞掉生活。source: personality lens | confidence: interpretive
 
 ## Open Threads
 
@@ -30,3 +33,4 @@
 ## Timeline
 
 - 2026-05-08 | source: file | confidence: medium | 從 `inbox/about me.md`、`inbox/about me 3.md`、`inbox/about me 4.md` 萃取日常偏好：低摩擦、高自治、功能導向、健康數據化、消費重視耐用與長期成本。
+- 2026-06-27 | source: conversation | confidence: medium | 依使用者要求加入紫微斗數描述，將生活偏好解讀為保護認知能量、穩定輸出與降低長期摩擦的配置方式。

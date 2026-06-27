@@ -2,7 +2,7 @@
 
 ## Summary
 
-使用者目前的長期輪廓是系統型 operator：內容創作者、GSOC / SOC 背景工作者、全端/自動化實作者與個人知識系統建構者。AI 協作主要服務寫作產出、資料研究、知識管理、流程自動化，以及可稽核、可交接的工作流程；目前正在把 `AI-Agent` repo 整理成跨 AI 可接續的個人作業系統。
+使用者目前的長期輪廓是系統型 operator：內容創作者、GSOC / SOC 背景工作者、全端/自動化實作者與個人知識系統建構者。AI 協作主要服務寫作產出、資料研究、知識管理、流程自動化，以及可稽核、可交接的工作流程；目前正在把 `AI-Agent` repo 整理成跨 AI 可接續的個人作業系統。整合性格資料後，核心人格可理解為「溫和但有原則的系統照護者」：重視讓人事物可被安置、可被解釋、可長期運作，但現階段更容易把創作、產品、知識系統與輸出成果當成自我定位的主軸。source: personality lens | confidence: interpretive
 
 ## Current Understanding
 
@@ -17,6 +17,9 @@
 - 長期價值排序傾向自治權、系統效率、真實性、能力成長；對高政治成本、低品質協作、沒準備的 firefighting 與情緒凌駕邏輯的流程耐受低。
 - 能接受辛苦、高學習成本、孤獨工作與長時間研究，但希望投入能形成長期槓桿或可持續運作的系統。
 - 日常風格偏簡單、穩定、可控、長期划算，重視功能性、耐用性、低總成本與低維護。
+- 長期人格不是純競爭型，更像透過理解、照顧、規則與保護感來建立秩序；思考方法、資源整理與外部適應三線並重，支持系統化 operator、知識整理、自動化與可交接流程的長期輪廓。source: personality lens | confidence: interpretive
+- 工作方式偏向拆解問題、找方法、優化流程與接受多觀點；職涯價值更容易放在解法品質與系統效率，而不是單純職稱或外顯地位。source: personality lens | confidence: interpretive
+- 內在滿足感來自照亮問題、提出框架、幫助他人理解；現階段自我定位容易集中在作品、產品、知識系統、內容輸出與外放成果，但也需要避免照顧、說明、補位與反覆打磨變成長期精神消耗。source: personality lens | confidence: interpretive
 
 ## Open Threads
 
@@ -39,3 +42,4 @@
 - 2026-05-07 | source: conversation | confidence: high | 將使用者長期輪廓從 `000_Agent/memory/MEMORY.md` 與 `000_Agent/CORE_RULES.md` 收斂到 self_brain identity 層。
 - 2026-05-08 | source: file | confidence: medium | 從 `inbox/about me*.md` 萃取使用者長期輪廓：系統型 operator、低摩擦偏好、自治權與系統效率優先、AI/自動化/知識系統作為認知基礎設施。
 - 2026-05-08 | source: file | confidence: high | `AI-Agent` rebuild plan 顯示使用者正在把跨 AI 規則、能力、流程、記憶與知識庫收斂成可長期維護的本地 AI Operating System。
+- 2026-06-27 | source: conversation | confidence: medium | 使用者要求用紫微斗數描述補強 identity，並明確指定若既有資料與該描述矛盾，以紫微斗數描述為主；排盤口徑採國曆 1993-02-02、男命、晚子時。

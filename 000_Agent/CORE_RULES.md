@@ -61,7 +61,7 @@
 - 每日流水、工作復盤、session log 寫入 `300_Journal/YYYY-MM/YYYY-MM-DD.md`。
 - 使用者長期偏好、決策、人物、專案脈絡、寫作聲音寫入 `400_Knowledge/self_brain/`。
 - 寫作原始樣本放 `200_Reference/writing-samples/`；分析後的寫作聲音才放 `400_Knowledge/self_brain/writing_voice/`。
-- 可重複執行 SOP 放 `000_Agent/skills/<skill>/SKILL.md`；`000_Agent/workflows/` 只保留快捷入口，不重複完整步驟。
+- 可重複執行 SOP 放 `000_Agent/skills/<skill>/SKILL.md`；`000_Agent/workflows/` 僅保留非單一 skill 能涵蓋之獨立 playbook（如 `code-review.md`），不再建立純轉發 skill 的 workflow 檔案。
 - 外部導入但未正式採用的資料放 `200_Reference/imported/`，不要當成當前執行規則。
 
 ## 安全規則
@@ -84,6 +84,7 @@
 ## Git 規則
 
 - 修改前先檢查 `git status`。
+- 任何會丟棄 working tree 變更的操作都必須先 `git status`，包含 `git checkout -- <file>`、`git restore <file>`、清除檔案、覆寫檔案與重設分支。若工作區已有未提交變更，先判斷是否為使用者或其他 Agent 的成果；必要時用 stash 或另存 patch 保護，不得為了修單一錯誤直接覆蓋。
 - 不要主動 commit，除非我明確要求。
 - 不要主動 push，除非我明確要求。
 - 大改前先說明會影響哪些檔案。

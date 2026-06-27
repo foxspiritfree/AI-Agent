@@ -93,6 +93,7 @@ Run through this after the core feature is working. Do not skip items!
 - Prefer small, reviewable changes.
 - Add error handling around network, database, and file operations.
 - Avoid unnecessary rewrites. Explain assumptions.
+- Do not trust structured facts embedded in LLM prose. Dates, calendar ranges, money, IDs, quotas, contract fields, status codes, and other computable or verifiable values must come from code, databases, or authoritative sources. If an LLM output already contains such a value, post-processing must correct or replace it instead of skipping validation because the value exists.
 
 ## Chrome Extension / YouTube Notes
 - Keep Vite MV3 content scripts self-contained (no split `import` chunks in `content_scripts`).

@@ -1,0 +1,361 @@
+# Threads Weekly Reading Report
+
+Generated: 2026-06-18T12:59:42.781Z
+Window: last 7 days
+
+## Summary
+
+- AI 工作流與個人系統: 59
+- 職場協作、信任與團隊流動: 50
+- 溝通、提問、傾聽與說服: 40
+- 習慣、專注、行為設計: 50
+- 成長、壓力、韌性與反脆弱: 30
+- 寫作、閱讀與卡片盒知識生產: 39
+- 身體科學、運動訓練、疼痛與睡眠: 50
+- 商業、產品、品牌與成長實驗: 39
+
+## Readable Posts
+
+### AI 工作流與個人系統
+
+- score=15885 query=工作流
+  - author=@cc5320999 date=2025-9-6
+  - 怎麼有這樣輕鬆的工作，而我在公司是累的半死😫😫
+  - https://www.threads.com/@cc5320999/post/DOQ0YzVDyLE
+- score=15209 query=自動化
+  - author=@bonnie_.0668 date=2025-9-26
+  - 《打字機》
+  - https://www.threads.com/@bonnie_.0668/post/DPDi_z4CfDi
+- score=8553 query=Claude Code
+  - author=@boris_cherny date=2026-2-1
+  - I'm Boris and I created Claude Code. I wanted to quickly share a few tips for using Claude Code, sourced directly from the Claude Code team. The way the team uses Claude is different than how I use it. Remember: there is no one right way to use Claude Code -- everyones' setup is different. You should experiment to see what works for you!
+  - https://www.threads.com/@boris_cherny/post/DUMZr4VElyb
+- score=8361 query=自動化
+  - author=@lin_li2002 date=2025-6-7
+  - 高明的壓縮技術
+  - https://www.threads.com/@lin_li2002/post/DKmglH6y0EA
+- score=7708 query=AI agent
+  - author=@sleepyrogue date=2025-12-11
+  - anti ai, pro hag
+  - https://www.threads.com/@sleepyrogue/post/DSGM0LZkSoj
+- score=7592 query=AI agent
+  - author=@sabrina_ramonov date=2025-5-24
+  - I spent 50+ hours curating AI Agent & Automation templates. No paywalls. No friction. No signup. 100% FREE. Ready to download and import into Make/n8n. Best for: - Beginners looking to learn by example - Creators & entrepreneurs automating tedious workflows - AI automation consultants and agencies building customized solutions 800+ real-world use cases. Search by tool, use case, and platform. If you want to get it FREE, you know the deal: 1. Like 2. Share 3. Comment "agents"
+  - https://www.threads.com/@sabrina_ramonov/post/DKAr4lTCf8p
+- score=6359 query=Claude Code
+  - author=@toshiki_3 date=unknown
+  - 4天 ←Claude code up to yesterday Claude code starting today→
+  - https://www.threads.com/@toshiki_3/post/DZh3AMriUxx
+- score=6329 query=Claude Code
+  - author=@hellonecole date=2026-3-28
+  - Can I see some links of what you’ve built with Claude code? Blow my mind
+  - https://www.threads.com/@hellonecole/post/DWZfs0ClO8N
+- score=5322 query=工作流
+  - author=@mi_916._ date=2025-12-21
+  - 做餐飲業的工讀生到底是靠什麼意志力撐下來的。
+  - https://www.threads.com/@mi_916._/post/DSgsxh-k7h-
+- score=4622 query=工作流
+  - author=@probabyyyy._ date=2026-5-5
+  - 工作留痕的重要性
+  - https://www.threads.com/@probabyyyy._/post/DX87YOHoDKe
+
+### 職場協作、信任與團隊流動
+
+- score=13709 query=主管
+  - author=@littlemchan date=2026-5-26
+  - 上班就是： 一群窮人， 在互相為難。
+  - https://www.threads.com/@littlemchan/post/DYyJIgzk0-N
+- score=12956 query=心理安全感
+  - author=@healingtrauma.24 date=2024-8-14
+  - 在心理學中，和父母不親近的叫做：失望性情感隔離（Disappointment Emotion Regulation）。 表現就是和父母沒有親人的感覺，不想溝通，也不想有任何情感上的牽掛，最好的相處模式就是：各過各的。 這是一種心理上的隔離機制，本質就是對父母過於失望，因為早年間缺乏父母的理解和支持，很多情感訴求都沒有得到回應，所以不再把父母當作情感依靠。這類人在成年後會有很多心理上的問題，比如自卑、敏感、缺乏安全感，形成冷漠型人格。
+  - https://www.threads.com/@healingtrauma.24/post/C-pOLFFSgw2
+- score=10375 query=心理安全感
+  - author=@pudding_lovestory date=2025-7-25
+  - 為什麼有些人一談戀愛就變得很黏？ 有一種心理現象叫 Anxious Attachment（焦慮型依附） 意思是：小時候缺乏穩定的愛，長大後就容易把安全感綁在一個人身上。
+  - https://www.threads.com/@pudding_lovestory/post/DMhGGt0TMO8
+- score=9934 query=知識共享
+  - author=@anime.recipefile date=2024-8-1
+  - 分享一個你知道的 我們這一家冷知識
+  - https://www.threads.com/@anime.recipefile/post/C-HP3t0SRZj
+- score=9516 query=知識共享
+  - author=@b.intunee date=2025-9-26
+  - 樂於分享網絡笑話
+  - https://www.threads.com/@b.intunee/post/DPCMJttCVa6
+- score=8622 query=知識共享
+  - author=@czurz_ date=2024-8-7
+  - 分享欲要分享給能接著的人
+  - https://www.threads.com/@czurz_/post/C-XB78SvX59
+- score=5496 query=知識共享
+  - author=@airkon59 date=2026-5-5
+  - 文字排版的思路分享
+  - https://www.threads.com/@airkon59/post/DX8LvAYF6Tc
+- score=5333 query=主管
+  - author=@zhanqianjin5 date=2025-11-8
+  - 各位朋友 您是哪種行業？ 我是勞工
+  - https://www.threads.com/@zhanqianjin5/post/DQxfziykoB_
+- score=4377 query=主管
+  - author=@han525__ date=2026-5-21
+  - ✈️✌🏼（長官說招募員要經營脆
+  - https://www.threads.com/@han525__/post/DYlk97gEgIb
+- score=4186 query=協作
+  - author=@05sunset.xi date=2026-1-6
+  - 請選擇你的逆世界Partner ！
+  - https://www.threads.com/@05sunset.xi/post/DTI5eI2E1aO
+
+### 溝通、提問、傾聽與說服
+
+- score=56273 query=溝通
+  - author=@jiang0720 date=2026-4-30
+  - 跟朋友打電話都用眼神交流 👀
+  - https://www.threads.com/@jiang0720/post/DXwnzruAdu9
+- score=37952 query=情緒管理
+  - author=@jeudbse date=2025-8-30
+  - 我的情緒管理就是直接不講話避免我噴人
+  - https://www.threads.com/@jeudbse/post/DN8hWjjEpru
+- score=21793 query=溝通
+  - author=@huoinmi date=2026-5-20
+  - 男生的溝通方式
+  - https://www.threads.com/@huoinmi/post/DYjyA9sGIcQ
+- score=18260 query=溝通
+  - author=@__xin.01 date=2025-6-14
+  - 以前一直覺得溝通是最重要的 現在發現溝通沒用 對方理解才有用
+  - https://www.threads.com/@__xin.01/post/DK4EEBrPxEU
+- score=16505 query=提問
+  - author=@topac_english date=2025-6-21
+  - 你能答對嗎？
+  - https://www.threads.com/@topac_english/post/DLKEaNtzbpi
+- score=11756 query=溝通
+  - author=@xiaoai_k date=2026-5-27
+  - 溝通很重要，但溝通的前提是彼此理解。
+  - https://www.threads.com/@xiaoai_k/post/DY14jjPE871
+- score=10990 query=提問
+  - author=@topac_english date=2025-6-27
+  - 你能答對嗎？
+  - https://www.threads.com/@topac_english/post/DLZgSD5zKVq
+- score=10955 query=情緒管理
+  - author=@happycouplelab date=2025-10-7
+  - 論：情緒穩定的重要性⋯⋯⋯⋯
+  - https://www.threads.com/@happycouplelab/post/DPg0JHMCUE5
+- score=9502 query=提問
+  - author=@topac_english date=2025-6-28
+  - 你能答對嗎？
+  - https://www.threads.com/@topac_english/post/DLbp7N1Mk-e
+- score=5705 query=情緒管理
+  - author=@3.2.1.2025 date=2025-5-21
+  - 「情緒穩定的代價是情感漠視」
+  - https://www.threads.com/@3.2.1.2025/post/DJ41I-eT3Gm
+
+### 習慣、專注、行為設計
+
+- score=60196 query=專注力
+  - author=@viregeek date=2026-2-20
+  - 自律兩個月，你就像變了個人 1. 狠狠睡覺 堅持每天晚上10點睡覺，早上6點起床，早睡到底有沒有用，堅持一個星期就知道了。 2. 空腹喝水 睜眼先灌500ml溫水，宿便排空，皮膚透亮，比貴婦精華管用。 3. 戒掉短影音 刪除時手別抖，三個月後專注力暴漲200%。 4. 寫晨間清單 6:10到6:30列當日三件要事，拖延症被扼殺在黎明。 5. 每日深蹲 從50個起步，臀線提升的速度，比電梯還快。 6. 戒糖21天 飲料只喝白水，痘痘暗沉集體離家出走。 7. 五秒鐘原則 想到的事5秒內起身做，執行力碾壓99%同齡人。 8. 冥想 午休時閉上眼睛，專心感受呼吸12分鐘，讓心情更平靜穩定。 9. 讀書 把娛樂刷劇時間砍半，認知水平每週都在提升。 10. 定期斷捨離 每週扔十件物品，選擇困難症不治而癒。 11. 戒掉解釋慾 被誤解時沉默微笑，內耗指數直降為零。
+  - https://www.threads.com/@viregeek/post/DU-b-a1DHCN
+- score=45813 query=拖延
+  - author=@alice_90_10_30 date=2025-11-27
+  - @你那拖延症的朋友看
+  - https://www.threads.com/@alice_90_10_30/post/DRi-AjTksNu
+- score=27627 query=意志力
+  - author=@cyu16045 date=2026-5-16
+  - 毫無規劃：
+  - https://www.threads.com/@cyu16045/post/DYXulmWkxBV
+- score=25517 query=專注力
+  - author=@gary_nutri365 date=2026-2-18
+  - 月經除了來的這幾天會不舒服，還有一種狀態叫「經前症候群」，出現在月經來前約 7–14 天 . 生理症狀：食慾增加、想吃甜食、手腳水腫、體重上升、皮膚出油或長痘、疲勞感增加、腹部悶痛等。心理症狀：情緒起伏大、焦慮緊張、憂鬱低落、容易暴怒、專注力下降、嗜睡或失眠等 . 結論：經前症候群 7-14 天，再加上經期不適的 3-5 天，對部分女生來說，每個月有一半的時間都在跟這副身體對抗
+  - https://www.threads.com/@gary_nutri365/post/DU5RS9Ij792
+- score=24655 query=拖延
+  - author=@0107.33 date=2026-4-16
+  - 請問有什麼辦法可以把拖延症戒掉 變成一個自律的人
+  - https://www.threads.com/@0107.33/post/DXLrGxHEksx
+- score=21475 query=多巴胺
+  - author=@jokerbing23 date=2024-11-11
+  - 蛋白加強版
+  - https://www.threads.com/@jokerbing23/post/DCOLfTNyEbe
+- score=18500 query=意志力
+  - author=@daiiiii_li date=2026-2-24
+  - 谁的逼是完全对称的
+  - https://www.threads.com/@daiiiii_li/post/DVIdJ4LgWmK
+- score=14643 query=拖延
+  - author=@gary_nutri365 date=2026-1-9
+  - 「睡前拖延」是明知應該休息，卻刻意延後上床的行為，常見於白天壓力大、缺乏掌控感的人，透過犧牲睡眠換取片刻自由。如果你今晚睡眠不足，隔天食慾和壓力賀爾蒙都會上升、身體燃脂效率變差，腹部脂肪也更容易囤積 好好休息，明天才有精神，知道嗎？ 地球上還有一個營養師關心你睡了沒
+  - https://www.threads.com/@gary_nutri365/post/DTQavwPD4iI
+- score=11361 query=意志力
+  - author=@annieliao.hh date=2025-11-10
+  - 有趣的職缺
+  - https://www.threads.com/@annieliao.hh/post/DQ4ZRFxj9JR
+- score=6604 query=專注力
+  - author=@adhd_you_go_girl date=2026-1-19
+  - 朋友懷疑自己是ADHD，問了她幾個常見行為問題。 獨自一人時是不是動不了？ 答：我可以躺一整天，但我覺得是自己懶 聽人說話是不是會走神？ 答：有時候不知道為什麼就是會飄走。 很容易打斷人說話？ 答：是因為我擔心不立刻說出來會忘記 上網開很多分頁，手機截圖超多但從來不看？ 答：對對！（翻看手機，隨之發現幾萬張截圖） 但是只有要刪除照片時才會看 但是我有時候一專注可以10個小時，所以專注力應該沒問題的。 我說：那是ADHD hyperfocus，你快去排期約醫生。
+  - https://www.threads.com/@adhd_you_go_girl/post/DTqN-d1iYOe
+
+### 成長、壓力、韌性與反脆弱
+
+- score=41706 query=成長
+  - author=@chen._.03._ date=2026-5-30
+  - 成長的過程大概就是讓人越來越安靜.
+  - https://www.threads.com/@chen._.03._/post/DY91kyFATLi
+- score=37425 query=壓力
+  - author=@aecdz_520 date=2025-9-5
+  - 當你壓力已經夠大了 還要面對一堆破事：
+  - https://www.threads.com/@aecdz_520/post/DOL-RVLEhyx
+- score=34417 query=反脆弱
+  - author=@elleparlepeu date=2025-11-15
+  - 开发这个功能的人完全是反社会性人格
+  - https://www.threads.com/@elleparlepeu/post/DRFDgDnkWqQ
+- score=11764 query=反脆弱
+  - author=@solder_lll date=2026-1-29
+  - 蓋一個大家最厭煩的表情包、梗圖 每次看到就會尷尬到心情很差那種 我先
+  - https://www.threads.com/@solder_lll/post/DUFfjQODzOQ
+- score=9059 query=成長
+  - author=@yraeluneeo date=2026-6-11
+  - 人怎么能长成这样...
+  - https://www.threads.com/@yraeluneeo/post/DZa-PhCEo0e
+- score=8828 query=反脆弱
+  - author=@pinkuna_1999 date=2026-5-27
+  - 舔共是工作，居台是生活
+  - https://www.threads.com/@pinkuna_1999/post/DY1YPEGGVd8
+- score=8617 query=壓力
+  - author=@pipi__1103 date=2026-4-22
+  - 感覺現代人壓力應該是很大（？）
+  - https://www.threads.com/@pipi__1103/post/DXbqiTwCWRL
+- score=7642 query=反脆弱
+  - author=@heartof1108 date=2026-6-9
+  - 有些公畜疯了？反家暴打成女拳 动保立法打成女拳 提高性同意年龄打成女拳 这些基本人权社会公平不是现代法治文明最基本的要求吗 全都扯到性别对立上转移矛盾 在打男拳的时候有没有想过这不是反女权是反人权
+  - https://www.threads.com/@heartof1108/post/DZXnocQD6eK
+- score=5401 query=壓力
+  - author=@zmsxns date=2026-4-9
+  - 壓力好大 但我相信我可以的吧
+  - https://www.threads.com/@zmsxns/post/DW6BLUWk-nt
+- score=5283 query=壓力
+  - author=@inflating_charm date=2026-5-26
+  - 我覺得以後不會再報股票給朋友了 賺錢的時候沒任何好處 他們也不會感謝你 只會覺得是自己很厲害 虧錢的時候還要備受質疑 在市場中其實最需要磨練的還是心態 還在學習
+  - https://www.threads.com/@inflating_charm/post/DYyy63_kVFY
+
+### 寫作、閱讀與卡片盒知識生產
+
+- score=18014 query=閱讀
+  - author=@wangpichang date=2024-11-26
+  - 閱讀是一件很好的事....... 咦？.....沒了！！
+  - https://www.threads.com/@wangpichang/post/DC1qk5AP-xG
+- score=9119 query=閱讀
+  - author=@zweery__ date=2026-2-14
+  - 想問問大家 有沒有推薦一本覺得一定要讀一次的書！！
+  - https://www.threads.com/@zweery__/post/DUvfiWLE9lc
+- score=5238 query=寫作
+  - author=@kchaoliu_ date=2025-7-2
+  - 就參與創作了一個詞
+  - https://www.threads.com/@kchaoliu_/post/DLmYtHtykvF
+- score=4274 query=寫作
+  - author=@ppoq888 date=2026-5-2
+  - 作品可以反映出作者的境界
+  - https://www.threads.com/@ppoq888/post/DX04JN_kTId
+- score=4054 query=寫作
+  - author=@hsi._.theay date=unknown
+  - 5天 我需要寫作文可以用到的華麗辭藻
+  - https://www.threads.com/@hsi._.theay/post/DZhqxMuk4F5
+- score=2978 query=閱讀
+  - author=@chinyi_0106 date=2026-6-1
+  - ㄏㄏ（要帶哪本書去讀呢？）
+  - https://www.threads.com/@chinyi_0106/post/DZCWss0EneP
+- score=2069 query=閱讀
+  - author=@wootom0000 date=2026-4-8
+  - 謝囉，看完都不餓了🤗
+  - https://www.threads.com/@wootom0000/post/DW22wUlCXQ_
+- score=1277 query=閱讀
+  - author=@tw_0m3n date=2026-6-7
+  - 看到標題就吸引我的書 >:)
+  - https://www.threads.com/@tw_0m3n/post/DZSe5DSky7s
+- score=1204 query=閱讀
+  - author=@swim_run_bike_ann date=unknown
+  - 6天 Show你手上正在閱讀的書籍📚
+  - https://www.threads.com/@swim_run_bike_ann/post/DZe_HZYidcX
+- score=1171 query=閱讀
+  - author=@kasen_law date=unknown
+  - 2天 讀咁多書有乜用
+  - https://www.threads.com/@kasen_law/post/DZoM8MxH5oO
+
+### 身體科學、運動訓練、疼痛與睡眠
+
+- score=48924 query=營養
+  - author=@crab.310451 date=2026-4-21
+  - 我國中時有短暫的加入過不良少年團 但是只加入一天就離開了 因緣際會透過學姊認識到在混的乾哥 那時候也不知道在白痴什麼 覺得認識他們很屌 很大人 某天姐跟我說 X哥叫妳出來玩 我超興奮 覺得自己要走向歧途了 放學 遠遠看到X哥一群人坐在機車上 我馬上跟他們打招呼 還跟身旁的同學炫耀 我走嘍😎 我哥來了 殊不知苦難才剛開始………
+  - https://www.threads.com/@crab.310451/post/DXYf7yIkyQP
+- score=34364 query=睡眠
+  - author=@90_10_13_ date=2025-9-18
+  - 睡成這樣會讓人誤會
+  - https://www.threads.com/@90_10_13_/post/DOu-Z2EEVWB
+- score=23174 query=營養
+  - author=@yikai756 date=2026-4-21
+  - 不良是營養不良的意思嗎？
+  - https://www.threads.com/@yikai756/post/DXYydfUEpFs
+- score=16069 query=跑步
+  - author=@chastity.sloth.lee date=2025-9-21
+  - 「去見喜歡的人會用跑的。」
+  - https://www.threads.com/@chastity.sloth.lee/post/DO2mf5mgT91
+- score=11431 query=肌力
+  - author=@nutribeauty.chloe date=2026-3-18
+  - 昨天聽了劉軒訪問台灣知名腦科學家曾文毅醫師（對！我剛剛才發現他竟然是博恩的爸爸），這集真心真的含金量超高，我一定要整理出來! 1. 簡單的 777 口訣 睡滿 7 小時、吃飯 7 分飽、走 7000 步。最近好流行皮克敏，用起來!! 2. 降低大腦發炎 醫師強調：肌力運動、補充 Omega-3（魚油）、正念靜坐。這不僅防失智、還能降低胰島素阻抗跟情緒調節! 3. 安眠藥的真相 大腦只有在進入「深層睡眠」時才會啟動大掃除，清掉代謝廢物。安眠藥雖然強迫關機，卻傷了睡眠結構。垃圾卻全堆在腦袋裡。 4. 牙齒與腦袋的連動 牙齒越少、咀嚼功能越差，越容易失智。顧好牙齒，竟然也是在顧腦齡！ 5. 判斷「正常老化」vs「失智」 - 正常老化： 健忘，但過一陣子想得起來。 - 失智警訊： 情緒或興趣突然大變、專注力與記憶力逐步下滑。 曾醫師說：「大腦老化並非不可逆。」 這句話真的給了我很大的安慰。 這也是為什麼我這幾年不斷推廣「逆齡」。 因為我相信我們不應該等身體「當機」才修復，而是要從方方面面去優化，從而讓身體越來越健康年輕! 連結我放留言區，真心推薦大家去聽！
+  - https://www.threads.com/@nutribeauty.chloe/post/DWBbYSFEYtB
+- score=10692 query=跑步
+  - author=@hec___18 date=2026-2-6
+  - 開這台出來是跑身體健康的嗎？
+  - https://www.threads.com/@hec___18/post/DUZlj4sCTSi
+- score=8083 query=疼痛
+  - author=@lim780616 date=2026-1-31
+  - 我無法想像 到底有多痛 撕心裂肺般 五體朝天蹬
+  - https://www.threads.com/@lim780616/post/DUKUOYTk7MF
+- score=8020 query=疼痛
+  - author=@eric_fitness5070 date=2025-4-30
+  - 有人跟我一樣脊椎長滿骨刺的嗎？ 醫生說正常會痛到受不了⋯ 但是我怎麼都沒有任何不舒服？ 求解
+  - https://www.threads.com/@eric_fitness5070/post/DJDXaHjBr8U
+- score=7350 query=跑步
+  - author=@chennlilyy date=2026-3-14
+  - 開始跑步是一種中年危機嗎？🙂‍↔️
+  - https://www.threads.com/@chennlilyy/post/DV2q3cuk9aM
+- score=4226 query=營養
+  - author=@danjuandd date=2026-2-10
+  - 人的基础代谢为什么不能是五千卡？
+  - https://www.threads.com/@danjuandd/post/DUk_7jLEqjH
+
+### 商業、產品、品牌與成長實驗
+
+- score=25166 query=產品
+  - author=@aureate1314520 date=2026-2-10
+  - 買家是製杖嗎？
+  - https://www.threads.com/@aureate1314520/post/DUlS-wRkpHf
+- score=14415 query=體驗
+  - author=@7414_.__ date=2026-6-11
+  - 活著就是在體驗痛苦
+  - https://www.threads.com/@7414_.__/post/DZbh99-E_B0
+- score=9018 query=留存
+  - author=@lx_l_i_n date=2026-3-16
+  - 丟一串數字然後什麼都不說
+  - https://www.threads.com/@lx_l_i_n/post/DV8EOFJgKnL
+- score=6461 query=產品
+  - author=@drama.note date=unknown
+  - 台灣製造 2天 做了一個蒐集台灣製產品的網站～
+  - https://www.threads.com/@drama.note/post/DZnQY9Lk01F
+- score=5549 query=產品
+  - author=@___7yanna22___ date=2025-2-25
+  - 這兩個品牌你們必買什麼？
+  - https://www.threads.com/@___7yanna22___/post/DGfWpbASeck
+- score=1533 query=品牌
+  - author=@wakana_1359 date=unknown
+  - 上伊那牡丹，醉姿如百合 4天 景嵐你好富😭
+  - https://www.threads.com/@wakana_1359/post/DZj9nhgj5YM
+- score=1053 query=產品
+  - author=@ilovepinkoi date=2026-6-11
+  - 品品節現場變身中⋯⋯✨
+  - https://www.threads.com/@ilovepinkoi/post/DZcSEHDE3ET
+- score=964 query=體驗
+  - author=@panguanyu_ date=2025-7-10
+  - 人生就是一場體驗🔫
+  - https://www.threads.com/@panguanyu_/post/DL5V3aAT8mP
+- score=717 query=體驗
+  - author=@nelson_12.26 date=2026-2-14
+  - 人生的意義是體驗，不是闖關 🚶
+  - https://www.threads.com/@nelson_12.26/post/DUulZTOkgJF
+- score=704 query=產品
+  - author=@pasandra_pie date=2024-11-12
+  - 有沒有批發的廠商可以對接一下 我要源頭
+  - https://www.threads.com/@pasandra_pie/post/DCRXB0Pvglt

@@ -49,6 +49,13 @@ Use this skill to keep third-party binary work deliberate, traceable, and revers
 - Provide a rollback path for any test setup, such as a removal script, a list of files to remove, or a clean test-copy recreation step.
 - Keep original installations and production folders untouched unless the user explicitly asks to apply a proven test setup there.
 
+## Legacy Game / Binary Modding Notes
+
+- When old games, mods, or binary data files have broken text pointers, name IDs, or description fields, do not keep relying on string lookup. Use observable in-game stat combinations as a signature, such as weight, attack, defense, max HP, agility, or other numeric attributes, then scan records by record size and offset to reverse-locate the item ID and file offset.
+- Before patching a binary, keep the original hash and backup. Verify the locating script against a test copy before writing changes back.
+- When old games crash on Windows 10/11 because of DirectDraw, exclusive fullscreen, or MCI video playback, prefer reversible wrapper configuration tests such as `cnc-ddraw` with `renderer=gdi` and `nonexclusive=true`. Do not write directly into the original install folder first.
+- If a game video file is actually a standard MPEG-1-like file, copy it to `.mpg` and verify playback externally. If the game blocks on a crashing video, temporarily rename that video to `.bak` only in a test copy so the engine can skip it, and record the rollback steps.
+
 ## Reference
 
 Read `references/windows-binary-safety.md` when:

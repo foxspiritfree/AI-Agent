@@ -1,0 +1,106 @@
+{
+  "windowDays": 7,
+  "useTimeWindow": false,
+  "limitPerQuery": 10,
+  "candidateSettings": {
+    "maxCandidatesPerTopic": 3,
+    "maxReviewPoolPerTopic": 5,
+    "maxEvidencePerCandidate": 4,
+    "minEvidencePerCandidate": 1,
+    "minQualityScore": 40,
+    "reviewMinScore": 24,
+    "minTextLength": 18
+  },
+  "fields": "id,text,media_type,permalink,username,timestamp",
+  "topics": [
+    {
+      "id": "ai-workflow",
+      "name": "AI 工作流與個人系統",
+      "queries": [
+        "Claude Code",
+        "vibe coding",
+        "AI coding",
+        "MCP",
+        "AI 寫作"
+      ]
+    },
+    {
+      "id": "workplace-collaboration",
+      "name": "職場協作、信任與團隊流動",
+      "queries": [
+        "心理安全感",
+        "向上管理",
+        "工作交接",
+        "回饋文化",
+        "情緒勞動"
+      ]
+    },
+    {
+      "id": "communication-persuasion",
+      "name": "溝通、提問、傾聽與說服",
+      "queries": [
+        "炎上道歉",
+        "講重點",
+        "不會提問",
+        "傾聽",
+        "衝突溝通"
+      ]
+    },
+    {
+      "id": "behavior-design",
+      "name": "習慣、專注、行為設計",
+      "queries": [
+        "second screen",
+        "拖延症",
+        "專注力下降",
+        "多巴胺戒斷",
+        "時間管理"
+      ]
+    },
+    {
+      "id": "growth-resilience",
+      "name": "成長、壓力、韌性與反脆弱",
+      "queries": [
+        "反脆弱",
+        "黑天鵝",
+        "內耗",
+        "職業倦怠",
+        "平台期",
+        "情緒崩潰"
+      ]
+    },
+    {
+      "id": "writing-knowledge",
+      "name": "寫作、閱讀與卡片盒知識生產",
+      "queries": [
+        "卡片盒筆記",
+        "知識輸出",
+        "讀書心得",
+        "AI 寫作",
+        "台灣漫遊錄"
+      ]
+    },
+    {
+      "id": "body-health",
+      "name": "身體科學、運動訓練、疼痛與睡眠",
+      "queries": [
+        "functional patterns",
+        "跑步姿勢",
+        "肩頸痠痛",
+        "睡眠負債",
+        "久坐腰痛"
+      ]
+    },
+    {
+      "id": "product-growth",
+      "name": "商業、產品、品牌與成長實驗",
+      "queries": [
+        "使用者回饋",
+        "工具導入",
+        "上手成本",
+        "留存",
+        "功能修改"
+      ]
+    }
+  ]
+}

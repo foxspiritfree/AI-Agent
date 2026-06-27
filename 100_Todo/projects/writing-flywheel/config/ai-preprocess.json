@@ -1,0 +1,14 @@
+{
+  "provider": "gemini",
+  "model": "gemini-flash-latest",
+  "input": {
+    "latest_topic_candidates": "data/reports/topic-candidates-YYYY-MM-DD.md",
+    "latest_raw_report": "data/reports/threads-top-posts-YYYY-MM-DD.md",
+    "inspiration": "../../inbox/Inspiration.md",
+    "brand_voice": "brand_voice.md"
+  },
+  "output": {
+    "analysis_json": "data/reports/topic-candidates-ai-YYYY-MM-DD.json",
+    "analysis_md": "data/reports/topic-candidates-ai-YYYY-MM-DD.md"
+  }
+}

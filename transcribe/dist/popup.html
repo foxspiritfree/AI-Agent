@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Full Caption to Markdown</title>
+    <script type="module" crossorigin src="/popup.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="stylesheet" crossorigin href="/assets/popup-7vmz1xWm.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="header">
+        <h1>YouTube Caption to MD</h1>
+        <p id="statusText">準備中</p>
+      </header>
+
+      <section class="video">
+        <span class="label">影片</span>
+        <strong id="videoTitle">尚未讀取</strong>
+      </section>
+
+      <label class="field">
+        <span>字幕軌</span>
+        <select id="trackSelect"></select>
+      </label>
+
+      <fieldset class="formats">
+        <legend>格式</legend>
+        <label><input type="radio" name="format" value="ai-prompt" checked /> AI Prompt</label>
+        <label><input type="radio" name="format" value="timestamp-list" /> Timestamp List</label>
+        <label><input type="radio" name="format" value="plain-text" /> Plain Text</label>
+      </fieldset>
+
+      <div class="actions">
+        <button id="fetchButton" type="button">抓取完整字幕</button>
+        <button id="copyButton" type="button" disabled>複製 Markdown</button>
+        <button id="downloadButton" type="button" disabled>下載 .md</button>
+      </div>
+
+      <section class="stt">
+        <label class="field">
+          <span>STT Provider</span>
+          <select id="sttProviderSelect">
+            <option value="gemini" selected>Gemini</option>
+            <option value="openai">OpenAI</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>API key</span>
+          <input id="apiKeyInput" type="password" autocomplete="off" placeholder="Gemini or OpenAI API key" />
+        </label>
+        <div class="actions">
+          <button id="startSttButton" type="button">開始語音轉文字</button>
+          <button id="stopSttButton" type="button" disabled>停止並轉錄</button>
+        </div>
+      </section>
+
+      <dl class="stats">
+        <div>
+          <dt>Segments</dt>
+          <dd id="segmentCount">0</dd>
+        </div>
+        <div>
+          <dt>Words</dt>
+          <dd id="wordCount">0</dd>
+        </div>
+      </dl>
+    </main>
+  </body>
+</html>

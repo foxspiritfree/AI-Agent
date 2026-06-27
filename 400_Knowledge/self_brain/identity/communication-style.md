@@ -2,7 +2,7 @@
 
 ## Summary
 
-目前在溝通上偏好系統化、講求效率與邏輯，但在面對衝突與情緒高漲情境時，正刻意練習「先處理情緒，再處理問題」的高共情與低防衛溝通姿態。
+目前在溝通上偏好系統化、講求效率與邏輯，但在面對衝突與情緒高漲情境時，正刻意練習「先處理情緒，再處理問題」的高共情與低防衛溝通姿態。整合性格資料後，溝通核心可理解為「先建立可理解的秩序，再談情緒與承諾」：需要邏輯清楚、界線清楚、承諾可驗證。source: personality lens | confidence: interpretive
 
 ## Current Understanding
 
@@ -10,6 +10,9 @@
 - 對於高政治成本、情緒凌駕邏輯的流程耐受度較低。 confidence: high
 - 偏好保留自治權，不喜歡被強迫或命令語氣。 confidence: high
 - 理解「損失規避」與「承諾一致性」等心理學原則在溝通中的作用。 confidence: medium
+- 關係與合作溝通中很重視「話是否說清楚、承諾是否站得住、資源與界線是否可靠」；不喜歡模糊承諾或只靠情緒推動的互動。source: personality lens | confidence: interpretive
+- 對外溝通適合用解題、釐清、降噪與解除誤會的姿態；外部場域若缺少明確規則，容易傾向先觀察再投入。source: personality lens | confidence: interpretive
+- 內在溝通動機偏向把問題照亮、幫對方理解脈絡；現階段在表達、關係、創作與合作上容易反覆打磨，因此有效策略是先定義問題、邊界、證據與下一步。source: personality lens | confidence: interpretive
 
 ## Aspirational Direction
 
@@ -36,3 +39,4 @@
 ## Timeline
 
 - 2026-05-30 | source: conversation | confidence: high | 初次建立此頁，將卡片盒萃取出的溝通技巧分類為 Aspirational Direction，以輔助未來 AI 決策引導。
+- 2026-06-27 | source: conversation | confidence: medium | 依使用者要求加入紫微斗數描述，將溝通風格補強為重視清楚語義、可驗證承諾、界線與低噪音共識。

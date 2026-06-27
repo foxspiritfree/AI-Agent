@@ -26,7 +26,7 @@
 | 已判斷屬於 self_brain，但暫時無法歸類的長期個人脈絡 | `400_Knowledge/self_brain/inbox/` | 這已經是長期自我脈絡，只是還沒決定 identity、decisions、projects 等子層。 |
 | 仍在寫、還沒定稿的草稿 | `100_Todo/drafts/` | 這是進行中資料。 |
 | 可重複執行的任務 SOP | `000_Agent/skills/<skill>/SKILL.md` | 這是 AI 遇到某類任務時的正式方法。 |
-| 固定 slash 指令或儀式入口 | `000_Agent/workflows/` | 這只是快捷入口，正式步驟要指回 skill。 |
+| 固定 slash 指令或儀式入口 | `000_Agent/workflows/` | 僅保留獨立工作流（如 `code-review.md`），純轉發 skill 的快捷入口已移除。 |
 | Notion 匯出、外部 skill、pro-kit、上游 mirror | `200_Reference/imported/` | 這是外部來源，不直接當成當前規則。 |
 | study/body 卡片盒資料 | `400_Knowledge/study/` 或 `400_Knowledge/body/` | 這是知識庫 pipeline 的 profile 資料。 |
 | 舊 `400_Knowledge/知識庫` 卡片盒鏡像 | `200_Reference/imported/legacy-knowledge-base/` | 這是歷史來源；正式卡片來源改用 `400_Knowledge/study` / `400_Knowledge/body`。 |
@@ -41,7 +41,7 @@
 - 「這個專案之後要接續」：寫入 `400_Knowledge/self_brain/projects/`。
 - 「這個工具以後不要這樣用」：寫入 `000_Agent/memory/MEMORY.md`。
 - 「把這套流程做成 skill」：寫入 `000_Agent/skills/<skill>/SKILL.md`。
-- 「做一個一鍵流程」：在 `000_Agent/workflows/` 建快捷入口，正式步驟仍放 skill。
+- 「做一個一鍵流程」：優先建立 skill；除非該流程無法收納在單一 skill 且為獨立 playbook，否則不需建 workflow 入口。
 - 「這份資料我還不知道該放哪」：先放 `100_Todo/inbox/`，等釐清後再路由。
 - 「這是關於我的長期脈絡，但不知道放 self_brain 哪個子資料夾」：放 `400_Knowledge/self_brain/inbox/`，並標記待分類原因。
 
@@ -54,7 +54,7 @@
 - `ak-threads-booster` 是 Threads 實戰 skill 包；tracker、brand voice、compiled memory 屬於任務狀態，不取代 `self_brain/writing_voice/`。
 - `200_Reference/imported/` 只放外部導入原始素材；除非使用者明確要求，不當成當前執行規則。
 - 舊 `400_Knowledge/知識庫` 不再作為正式寫入目標；文章創作使用 `article-enrichment` skill，卡片來源使用 `study/body` profile。
-- workflow 不重複 SOP；workflow 只說何時用、指向哪個 skill。
+- workflows 僅保留非單一 skill 能涵蓋之獨立 playbook (如 `code-review.md`)；單一 skill 任務直接由對話觸發 skill，不需額外建立 workflows 檔案。
 
 ## 驗證案例
 
