@@ -43,6 +43,37 @@ If the user gives extra experience for a B/C topic, re-score it and move it into
 
 If the user gives a revised master draft, adapt it across platforms using `one_draft_multi_platform_template.md`.
 
+When the user signals privacy concern, coworker visibility, or low-identification preference, split outputs into:
+
+- `internal-source-rich`: internal weekly packet can keep fuller source detail for the user's own working memory
+- `external-low-identification`: email and sendable drafts should default to medium-strength de-identification
+
+Default low-identification strength:
+
+- keep first-person voice, emotion, mechanism, and judgment
+- remove or generalize job title, shift, tenure, team, department, nationality, age band, and location
+- rewrite direct quotes into paraphrased intent
+- avoid rare event bundles such as exact time + role + incident + person trait
+- merge multiple similar experiences when one exact event would be too identifying
+- if a scene still feels traceable after light edits, prefer role generalization plus scene abstraction over fidelity
+
+When sending any weekly packet email or shareable draft bundle, also create one user-editable companion file under:
+
+```text
+review/pending/
+```
+
+This companion file is for the user's own revision and replenishment, so they do not need to create a second copy manually.
+Use `templates/review-pending-companion.md` as the default shape for this file.
+Do not mirror the full weekly-packet template with blank fields.
+The companion should act like a working review doc:
+
+- summarize which topics are already ready, almost ready, or parked
+- recommend one next topic to push
+- keep only filled user material
+- rewrite empty intake prompts into short status notes or 1-2 concrete missing pieces
+- show current usable draft text directly instead of leaving placeholder sections
+
 ## Source Priority
 
 Read only what the current step needs.
@@ -130,6 +161,7 @@ Freshness is mandatory for weekly packets:
 - use existing `data/reports/` if fresh enough; otherwise run a current web check
 - do not send a weekly email while all candidates still say freshness was not checked
 - when evidence is evergreen rather than timely, mark it `yellow` or `weak` instead of pretending it is trending
+- when the user has privacy concerns, the internal weekly packet may stay source-rich, but any email-safe or sendable draft output should use `external-low-identification`
 
 If the user asks to email the weekly packet, use the Gmail plugin when available. Send it to `join6110@gmail.com` unless the user gives a different recipient. The email body should contain the complete weekly packet, not only a short summary. Put the recommended topic at the top, then include the full A/B/C sections and the low-friction reply format.
 
@@ -142,6 +174,14 @@ For the email version:
 - prefer plain headings and short bullet lists so Gmail does not collapse the hierarchy
 - never label generated note text as card-box content unless it came from `study/01_processed` or `body/01_processed`
 - include freshness status in the email queue summary and inside each A/B/C item
+- default to `external-low-identification` when privacy concern is present
+- paraphrase direct dialogue instead of keeping memorable original wording
+- generalize traceable role markers into broad labels such as `同事`, `前輩`, `某個人`, `一個現場`
+- preserve the mechanism and emotional turn even if exact event coordinates are removed
+- whenever an email-safe packet or sendable draft is generated, save a matching user-editable version in `review/pending/`
+- naming default: `YYYY-MM-DD-<topic-or-packet>-revised.md` for Markdown working files
+- if the email includes multiple A topics, create one packet-level companion file plus topic-level draft files when they already exist
+- packet-level companion files in `review/pending/` should be status-oriented working docs, not blank intake forms copied from the packet template
 
 ### 2. User Reply Intake
 
@@ -174,6 +214,14 @@ Draft in this order:
 4. Shape rhythm, phrasing, humor, and ending using the rest of `brand_voice.md`.
 5. Produce a Threads-ready master draft.
 6. Ask the user to revise before platform adaptation.
+
+If privacy concern is active, produce the sendable draft in `external-low-identification` mode by default:
+
+- keep the observation, conflict, and turn
+- abstract the coordinates of the event
+- remove unique identifiers before polishing the voice
+- if the topic depends on one highly traceable incident, broaden it into a pattern-level vignette before final drafting
+- after generating the sendable version, place the user-editable copy in `review/pending/` so the user can revise that file directly before adaptation
 
 If AK-Threads-Booster is available, use its logic as the review layer:
 

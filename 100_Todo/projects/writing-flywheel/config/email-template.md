@@ -5,6 +5,7 @@ Subject: 本週寫作飛輪 - YYYY-MM-DD
 ## 寄送規則
 
 - 使用 Gmail 外掛直接寄到 `join6110@gmail.com`。
+- 預設優先使用 `text/html` 寄送，而不是單純 Markdown。
 - 信件本文放完整 weekly packet，不只放摘要。
 - 開頭可保留一段「本週建議先寫」，但後面必須貼上 A/B/C 完整內容。
 - 附上本機 weekly packet 路徑，方便回查。
@@ -20,6 +21,13 @@ Subject: 本週寫作飛輪 - YYYY-MM-DD
 - 一週可以有多篇 A 題；email 開頭列「本週可寫清單」，不要做成 A/B/C 各一篇。
 - 每個 A/B/C 題目都必須附 `外部新鮮度`：`green / yellow / weak / red / unverified`。
 - 不可寄出仍寫著「未查外部新鮮度」的 weekly email；若沒有強時事訊號，要明確標成 `yellow` 或 `weak`。
+- HTML 版排版基準：
+  - 內文基準字級至少 `17px`
+  - 行高至少 `1.7`
+  - 主內容容器寬度約 `720px`
+  - 用分段卡片與留白做層次，不靠密集細字
+  - 標題、摘要、A/B/C 區塊都要有明確視覺分隔
+  - 長段落拆短，避免一整片文字牆
 
 ## 信件本文
 
@@ -62,4 +70,10 @@ C. 先觀察
 
 ```text
 data/weekly-packets/YYYY-MM-DD.md
+```
+
+若有 HTML 版，優先使用：
+
+```text
+data/weekly-packets/YYYY-MM-DD-email.html
 ```

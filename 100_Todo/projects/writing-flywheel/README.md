@@ -97,6 +97,7 @@ Project-side routing:
 - `drafts/longform/` - optional longform expansions.
 - `drafts/platform-adapted/` - Threads / X / Facebook / Instagram / LinkedIn versions.
 - `review/pending/` - drafts waiting for user or AK review.
+  - use `templates/review-pending-companion.md`; keep it as a status-oriented working doc instead of a blank field template copy.
 - `review/approved/` - approved drafts.
 - `review/published/` - published records and metrics notes.
 - `state/flywheel-state.json` - run state and used-topic memory.

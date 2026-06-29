@@ -22,3 +22,10 @@
 - Weak or misleading queries in the latest validation include `second screen`, `黑天鵝`, `卡片盒筆記`, `functional patterns`, and most `product-growth` queries.
 - Named trend objects like `台灣漫遊錄` should be treated as temporary weekly injections when relevant, not permanent config defaults.
 - Next pass should prune ambiguous permanent queries, especially where public Threads search keeps matching unrelated text or promotional noise.
+- Internal weekly packets can remain source-rich, but email-safe and directly sendable drafts should default to medium-strength low-identification when the user signals privacy or coworker-visibility concerns.
+- Medium-strength low-identification means preserving first-person judgment, emotional turn, and mechanism while removing or generalizing traceable role markers, direct quotes, exact event coordinates, and rare incident bundles.
+- Whenever a weekly packet or sendable draft is emailed out, create a matching user-editable working copy in `review/pending/` so the user can revise or replenish material directly without duplicating files manually.
+- If the user fills replenishment directly inside a `review/pending/` companion file, treat that as user-reply intake, mirror the material into `data/user-replies/`, and promote any newly-complete topic into a master draft without waiting for a separate chat-form reply.
+- `review/approved/` means the user has accepted the current draft for this stage; treat approved drafts as weak voice evidence for future review, but do not auto-edit `brand_voice.md` from approval alone.
+- Only use approved drafts to revise `brand_voice.md` when there is a deliberate voice-review pass, ideally alongside published posts or repeated approval patterns across multiple drafts.
+- Drafts left in `drafts/threads/` but explicitly not adopted for the current round should be marked as parked in state, so they are not accidentally promoted into approved or platform adaptation later.
